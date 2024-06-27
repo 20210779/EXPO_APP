@@ -11,6 +11,9 @@ export default function P_OptionsScreen({ navigation }) {
       const BackPerfil = () =>{
         navigation.navigate("Perfil");
       }
+      const GoLanguage = () =>{
+        navigation.navigate("Language");
+      }
 
   return (
     <View style={styles.container}>
@@ -40,7 +43,7 @@ export default function P_OptionsScreen({ navigation }) {
           </View>
           <View style={styles.option}>
             <MaterialIcons name="language" size={24} color="white" />
-            <Button mode="contained" style={styles.button}>
+            <Button mode="contained" style={styles.button} onPress={GoLanguage}>
               Idioma
             </Button>
           </View>

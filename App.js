@@ -14,6 +14,7 @@ import ChatScreen from './src/screens/ChatScreen';
 import PerfilScreen from './src/screens/PerfilScreen';
 import EditProfileScreen from './src/screens/EditPerfilScreen';
 import P_OptionsScreen from './src/screens/P_OptionsScreen';
+import ChangeLanguageScreen from './src/screens/ChangeLanguageScreen';
 //Librerias
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -72,6 +73,7 @@ export default function App() {
         <Stack.Screen name="Perfil" component={BottomTab} options={{headerShown:false}}/>
         <Stack.Screen name="Pass" component={VerifyEmailScreen} options={{headerShown:false}}/>
         <Stack.Screen name="ChatScreen" component={ChatScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="Language" component={ChangeLanguageScreen} options={{headerShown:false}}/>
         <Stack.Screen name="VerifyCodeScreen" component={VerifyCodeScreen} options={{headerShown:false}}/>
         <Stack.Screen name="NewPasswordScreen" component={NewPasswordScreen} options={{headerShown:false}}/>
         <Stack.Screen name="POptions" component={P_OptionsScreen} options={{headerShown:false}}/>
