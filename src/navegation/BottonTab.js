@@ -12,7 +12,7 @@ import ChatScreen from '../screens/ChatScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import NotifiScreen from "../screens/NotifiScreen";
 
-// Navegador Bottom Tabs Navigator
+// Botones de navegacion 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
