@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Image, Text, TextInput, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const EditProfileScreen = () => {
+  const navigation = useNavigation();
+  
   const [name, setName] = useState('Juancho Perez');
   const [email, setEmail] = useState('JuanP@gmail.com');
   const [phone, setPhone] = useState('12345678');
@@ -11,7 +14,9 @@ const EditProfileScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <MaterialIcons name="arrow-back" size={24} color="white" />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <MaterialIcons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
         <Text style={styles.headerText}>Editar perfil de usuario</Text>
       </View>
       <Image
@@ -58,16 +63,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#00A2FF',
-    alignItems: 'center',
   },
   header: {
-    width: '100%',
-    height: 80,
-    backgroundColor: '#0096FF',
-    justifyContent: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    padding: 16,
+    backgroundColor: '#1976D2',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+  },
+  title: {
+    fontSize: 20,
+    color: '#fff',
+  },
+  infoH:{
+    width: '100%',
+    padding: 9,
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#004E92',
   },
   headerText: {
     color: 'white',
@@ -76,14 +94,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginTop: -30,
+    width: '100%',
+    height: 230,
   },
   formContainer: {
     width: '90%',
     marginTop: 20,
+    alignSelf: 'center',
   },
   label: {
     fontSize: 16,

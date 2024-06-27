@@ -53,7 +53,7 @@ export default function BottomTab() {
         tabBarIcon: ({ color }) => (
           <Entypo name="home" size={34} />
         ),
-      }}
+      }}  
     />
     <Tab.Screen
       name="PerfilScreen"

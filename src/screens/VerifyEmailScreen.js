@@ -49,7 +49,7 @@ const VerifyEmailScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e6f7ff',
+    backgroundColor: '#0356A2',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     left: 20,
   },
   backButtonText: {
-    color: '#007bff',
+    color: 'white',
     fontSize: 18,
   },
   iconContainer: {
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    color: '#007bff',
+    color: '#fff',
     textAlign: 'center',
     marginBottom: 20,
   },

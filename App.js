@@ -11,6 +11,7 @@ import BottomTab from './src/navegation/BottonTab';
 import NewPasswordScreen from './src/screens/NewPasswordScreen';
 import VerifyCodeScreen from './src/screens/VerifyCodeScreen';
 import ChatScreen from './src/screens/ChatScreen';
+import PerfilScreen from './src/screens/PerfilScreen';
 import EditProfileScreen from './src/screens/EditPerfilScreen';
 import P_OptionsScreen from './src/screens/P_OptionsScreen';
 //Librerias
@@ -68,6 +69,7 @@ export default function App() {
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}}/>
         <Stack.Screen name="Home" component={BottomTab} options={{headerShown:false}}/>
+        <Stack.Screen name="Perfil" component={BottomTab} options={{headerShown:false}}/>
         <Stack.Screen name="Pass" component={VerifyEmailScreen} options={{headerShown:false}}/>
         <Stack.Screen name="ChatScreen" component={ChatScreen} options={{headerShown:false}}/>
         <Stack.Screen name="VerifyCodeScreen" component={VerifyCodeScreen} options={{headerShown:false}}/>
