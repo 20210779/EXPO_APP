@@ -43,7 +43,7 @@ export default function BottomTab() {
       options={{
         headerShown:false,
         tabBarShowLabel: false, 
-        tabBarActiveTintColor: '#FFC300', // Color activo de la pestaña
+        tabBarActiveTintColor: '#FFC300', // Color activo de la pestaña.
         headerStyle: {
           backgroundColor: '#FFC300', // Color del header
         },
