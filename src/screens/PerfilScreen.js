@@ -11,12 +11,22 @@ export default function PerfilScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Card style={styles.card}>
+      <View style={styles.header}>
+        <Image
+          source={require('../../assets/logo_carga.png')} // Reemplaza con la ruta de tu logo
+          style={styles.logo}
+        />
+        <Text style={styles.title}>Pemi-parts</Text>
+      </View>
       <Image
           source={require('../../assets/miperfil.png')}  // Reemplaza con la ruta de tu logo
           style={styles.profileImage}
         />
+        <View style={styles.infoH}>
         <Text style={styles.name}>Juancho Perez</Text>
+        </View>
+      <Card style={styles.card}>
+        
         <Text style={styles.info}>Correo: JuanP@gmail.com</Text>
         <Text style={styles.info}>Teléfono: 12345678</Text>
         <Text style={styles.info}>DUI: 12345678-9</Text>
@@ -32,26 +42,47 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#00A2FF',
+  },
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#1976D2',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+  },
+  title: {
+    fontSize: 20,
+    color: '#fff',
+  },
+  infoH:{
+    width: '100%',
+    padding: 9,
+    alignContent: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#004E92',
   },
   card: {
-    width: '80%',
-    padding: 20,
+    width: '100%',
+    padding: 90,
     borderRadius: 10,
     alignItems: 'center',
-    backgroundColor: '#0096FF',
+    backgroundColor: '#1984E2',
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 20,
+    width: '100%',
+    height: 230,
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
+    alignContent: 'center',
+    justifyContent: 'center',
     marginBottom: 10,
   },
   info: {
@@ -61,7 +92,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
-    backgroundColor: '#4CAF50',
+    borderRadius: 0,
+    backgroundColor: '#67B4F9',
   },
 });
 

@@ -109,6 +109,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '80%',
   },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+  },
 });
 
 

@@ -25,7 +25,7 @@ export default function BottomTab() {
         title: 'Inicio',
         headerShown:false,
         tabBarShowLabel: false, 
-        tabBarActiveTintColor: '#000000', // Color activo de la pestaña
+        tabBarActiveTintColor: '#004E92', // Color activo de la pestaña
         headerStyle: {
           backgroundColor: '#000000', // Color del header
         },
