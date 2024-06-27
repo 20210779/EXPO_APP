@@ -6,3 +6,4 @@ DEPENDENCIAS A UTILIZAR
 '''
 npm install react-native-paper
 '''
+npm install react-stack
