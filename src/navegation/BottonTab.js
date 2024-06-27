@@ -1,12 +1,16 @@
 // Utilidades de React Navigation
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { Entypo } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
+import { Fontisto } from '@expo/vector-icons';
+
 
 // Pantallas de navegación
-import PokemonList from '../screens/PokemonList';
 import HomeScreen from '../screens/HomeScreen';
-import PokemonAxios from '../screens/PokemonAxios';
+import PerfilScreen from '../screens/PerfilScreen';
+import ChatScreen from '../screens/ChatScreen';
+import MessagesScreen from '../screens/MessagesScreen';
+import NotifiScreen from "../screens/NotifiScreen";
 
 // Navegador Bottom Tabs Navigator
 const Tab = createBottomTabNavigator();
@@ -15,52 +19,77 @@ export default function BottomTab() {
   return (
     <Tab.Navigator>
     <Tab.Screen
-      name="HomeScreen"
-      component={HomeScreen}
+      name="MessagesScreen"
+      component={MessagesScreen}
       options={{
         title: 'Inicio',
         headerShown:false,
-        tabBarActiveTintColor: '#FFC300', // Color activo de la pestaña
+        tabBarShowLabel: false, 
+        tabBarActiveTintColor: '#000000', // Color activo de la pestaña
         headerStyle: {
-          backgroundColor: '#FFC300', // Color del header
+          backgroundColor: '#000000', // Color del header
         },
-        tabBarActiveBackgroundColor: "yellow",
-        tabBarInactiveBackgroundColor: "red",
-        headerTintColor: '#fff', // Color del texto en el header
+        tabBarActiveBackgroundColor: "#44FFFD",
+        tabBarInactiveBackgroundColor: "#1BC8FF",
+        headerTintColor: '#000000', // Color del texto en el header
         tabBarIcon: ({ color }) => ( // Función que define el ícono de la pestaña
           <Entypo name="chat" color={color} size={34} /> // `color` proviene de React Navigation
         ),
       }}
     />
     <Tab.Screen
-      name="PokemonAxios"
-      component={PokemonAxios}
+      name="HomeScreen"
+      component={HomeScreen}
       options={{
-        title: 'Lista Pokemon con Axios',
-        tabBarActiveTintColor: '#cc0000',
+        headerShown:false,
+        tabBarShowLabel: false, 
+        tabBarActiveTintColor: '#FFC300', // Color activo de la pestaña
         headerStyle: {
-          backgroundColor: '#cc0000',
-          borderBottomRightRadius: 35,
-          borderBottomLeftRadius: 35,
+          backgroundColor: '#FFC300', // Color del header
         },
+        tabBarActiveBackgroundColor: "#44FFFD",
+        tabBarInactiveBackgroundColor: "#1BC8FF",
         headerTintColor: '#fff',
         tabBarIcon: ({ color }) => (
-          <Ionicons name="list" color={color} size={24} />
+          <Entypo name="home" size={34} />
         ),
       }}
     />
     <Tab.Screen
-      name="PokemonList"
-      component={PokemonList}
+      name="PerfilScreen"
+      component={PerfilScreen}
+      options={{
+        title: 'PerfilScreen',
+        headerShown:false,
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: '#000000', // Color activo de la pestaña
+        headerStyle: {
+          backgroundColor: '#000000',
+        },
+        tabBarActiveBackgroundColor: "#44FFFD",
+        tabBarInactiveBackgroundColor: "#1BC8FF",
+        headerTintColor: '#000000',
+        tabBarIcon: ({ color }) => (
+          <FontAwesome name="user-circle-o" size={34}/>
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="NotifiScreen"
+      component={NotifiScreen}
       options={{
         title: 'Lista Pokemon Fetch',
-        tabBarActiveTintColor: '#3b4cca',
+        headerShown:false,
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: '#000000', // Color activo de la pestaña
         headerStyle: {
           backgroundColor: '#3b4cca',
         },
         headerTintColor: '#fff',
+        tabBarActiveBackgroundColor: "#44FFFD",
+        tabBarInactiveBackgroundColor: "#1BC8FF",
         tabBarIcon: ({ color }) => (
-          <Ionicons name="list" color={color} size={24} />
+          <Fontisto name="bell-alt" size={34}/>
         ),
       }}
     />

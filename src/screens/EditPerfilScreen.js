@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Image, Text, TextInput, TouchableOpacity } from 'react-native';
-import { Button } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const EditProfileScreen = () => {
