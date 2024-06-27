@@ -13,6 +13,11 @@ export default function LoginScreen({ navigation }) {
       navigation.navigate('Home');
     }
   }
+
+  const GoPassword = () =>{
+    navigation.navigate("Pass");
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -37,7 +42,9 @@ export default function LoginScreen({ navigation }) {
         value={password}
         onChangeText={setPassword}
       />
+      <TouchableOpacity style={styles.button} onPress={GoPassword}>
       <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Iniciar</Text>
       </TouchableOpacity>
@@ -79,13 +86,15 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     marginBottom: 20,
-    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
     width: '80%',
     height: 40,
     backgroundColor: '#00ccff',
     borderRadius: 5,
+    marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },

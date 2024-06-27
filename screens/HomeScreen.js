@@ -55,20 +55,6 @@ export default function HomeScreen() {
         }}
         style={styles.calendar}
       />
-      <View style={styles.footer}>
-        <View style={styles.footerIcon}>
-          <Image source={require('../../assets/chat.png')} style={styles.icon} /> 
-        </View>
-        <View style={styles.footerIcon}>
-          <Image source={require('../../assets/home.png')} style={styles.icon} />
-        </View>
-        <View style={styles.footerIcon}>
-          <Image source={require('../../assets/user.png')} style={styles.icon} />
-        </View>
-        <View style={styles.footerIcon}>
-          <Image source={require('../../assets/bell.png')} style={styles.icon} />
-        </View>
-      </View>
     </View>
   );
 }
@@ -120,6 +106,7 @@ const styles = StyleSheet.create({
   },
   calendar: {
     margin: 16,
+    marginTop: 60,
   },
   footer: {
     flexDirection: 'row',
