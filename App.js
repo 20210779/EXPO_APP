@@ -6,9 +6,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './src/screens/LoginScreen';
 import NavStack from './src/navegation/NavStack';
+import VerifyEmailScreen from './src/screens/VerifyEmailScreen'
 import BottomTab from './src/navegation/BottonTab';
-import HomeScreen from './src/screens/HomeScreen';
-import { WebView } from 'react-native-webview';
+import NewPasswordScreen from './src/screens/NewPasswordScreen';
+import VerifyCodeScreen from './src/screens/VerifyCodeScreen';
+import ChatScreen from './src/screens/ChatScreen';
+import EditProfileScreen from './src/screens/EditPerfilScreen';
+import P_OptionsScreen from './src/screens/P_OptionsScreen';
 //Librerias
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -64,6 +68,12 @@ export default function App() {
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}}/>
         <Stack.Screen name="Home" component={BottomTab} options={{headerShown:false}}/>
+        <Stack.Screen name="Pass" component={VerifyEmailScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="ChatScreen" component={ChatScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="VerifyCodeScreen" component={VerifyCodeScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="NewPasswordScreen" component={NewPasswordScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="POptions" component={P_OptionsScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
