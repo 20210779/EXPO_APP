@@ -1,62 +1,59 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet ,TextInput,Image,Button} from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
 import axios from 'axios';
+import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } from '@env';
 
-export default function ChatScreen({ route }) {
-  const { name, message, image } = route.params;
-
+export default function ChatScreen() {
   const [inputMessage, setInputMessage] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [recipientNumber, setRecipientNumber] = useState('');
 
   const sendMessage = async () => {
-    if (inputMessage.trim() === '') return;
+    if (inputMessage.trim() === '' || recipientNumber.trim() === '') return;
 
-    // Agregar mensaje del usuario a la lista de mensajes
-    setMessages(prevMessages => [...prevMessages, { text: inputMessage, fromUser: true }]);
-    setInputMessage('');
+    const apiUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
+
+    const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64');
 
     try {
-      // Reemplaza '192.122.176.73' con la IP de tu máquina
-      const apiUrl = 'http://192.122.176.73:3001/message';
-      console.log('Enviando mensaje a:', apiUrl);
+      const response = await axios.post(
+        apiUrl,
+        new URLSearchParams({
+          To: recipientNumber,
+          From: TWILIO_PHONE_NUMBER,
+          Body: inputMessage,
+        }).toString(),
+        {
+          headers: {
+            'Authorization': `Basic ${auth}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
 
-      // Llamar a tu servidor API
-      const response = await axios.post(apiUrl, { message: inputMessage });
-      
-      console.log('Respuesta de la API:', response.data);
-
-      // Agregar respuesta del modelo a la lista de mensajes
-      const botResponse = response.data.message; // Ajusta según la estructura de respuesta de tu API
-      setMessages(prevMessages => [...prevMessages, { text: botResponse, fromUser: false }]);
+      Alert.alert('Mensaje enviado', `Mensaje enviado a ${recipientNumber}`);
+      setInputMessage('');
+      setRecipientNumber('');
     } catch (error) {
       console.error('Error al enviar mensaje:', error);
-      // Manejo de errores (mostrar un mensaje de error o volver a intentar, según sea necesario)
+      Alert.alert('Error', 'Ocurrió un error al enviar el mensaje. Verifica tu conexión y la configuración del servidor.');
     }
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Image
-          source={image} // Reemplaza con la ruta de tu logo
-          style={styles.logo}
-        />
-        <Text style={styles.title}>{name}</Text>
-      </View>
-      <View style={styles.messageContent}>
-      <Text style={styles.message}>{message}</Text>
-      </View>
-      {/* Entrada de mensaje */}
-      <View style={{ flexDirection: 'row', alignItems: 'center' , marginTop:600, backgroundColor: '#2B5376', padding:15}}>
-        <TextInput
-          style={{ flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 20, paddingHorizontal: 16 }}
-          placeholder="Escribe un mensaje..."
-          value={inputMessage}
-          onChangeText={setInputMessage}
-        />
-        <Button title="Enviar" onPress={sendMessage} />
-      </View>
-      {/* Aquí puedes agregar más contenido relacionado con el chat */}
+      <TextInput
+        style={styles.input}
+        placeholder="Número de teléfono"
+        value={recipientNumber}
+        onChangeText={setRecipientNumber}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Escribe un mensaje..."
+        value={inputMessage}
+        onChangeText={setInputMessage}
+      />
+      <Button title="Enviar" onPress={sendMessage} />
     </View>
   );
 }
@@ -64,39 +61,14 @@ export default function ChatScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#407BAF',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'center',
     padding: 16,
-    backgroundColor: '#2B5376',
   },
-  logo: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-  },
-  loguito: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  messageContent: {
-    fontSize: 14,
-    color: '#fff',
-    marginTop: 20,
-    marginStart: 5,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    paddingTop: 17,
-    marginBottom: 12,
-  },
-  message: {
-    fontSize: 16,
-    color: '#fff',
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 8,
+    marginBottom: 16,
   },
 });

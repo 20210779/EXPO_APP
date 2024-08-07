@@ -12,8 +12,25 @@ export default function P_OptionsScreen({ navigation }) {
         navigation.navigate("Perfil");
       }
       const GoLanguage = () =>{
-        navigation.navigate("Language");
+        navigation.navigate("ChangeLanguage");
       }
+
+
+      const handleLogout = async () => {
+        try {
+          const response = await fetch(`${ip}/pemiparts/api/services/admin/usuario.php?action=logOut`, {
+            method: 'GET'
+          });
+          const data = await response.json();
+          if (data.status) {
+            navigation.navigate('Sesion');
+          } else {
+            Alert.alert('Error', data.error);
+          }
+        } catch (error) {
+          Alert.alert('Error', 'Ocurrió un error al cerrar la sesión: ' + error);
+        }
+      };
 
   return (
     <View style={styles.container}>
@@ -48,7 +65,7 @@ export default function P_OptionsScreen({ navigation }) {
             </Button>
           </View>
           <View style={styles.option}>
-            <Button mode="contained" style={styles.button}>
+            <Button mode="contained" style={styles.button} onPress={handleLogout}>
               cerrar sesion
             </Button>
           </View>

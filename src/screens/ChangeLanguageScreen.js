@@ -1,42 +1,48 @@
+
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import { useTranslation } from 'react-i18next';
+import i18n from './i18n';
+import * as RNRestart from 'react-native-restart';
+import 'intl-pluralrules';
 const ChangeLanguageScreen = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const handleLanguageChange = (language) => {
-    // Aquí puedes agregar la lógica para cambiar el idioma
-    console.log('Idioma seleccionado: ' + language);
+    i18n.changeLanguage(language).then(() => {
+      RNRestart.Restart();
+    });
   };
-
+  //aqui estan los botones para el cambio de idioma 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialIcons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Cambiar idioma</Text>
+        <Text style={styles.headerText}>{t('change_language')}</Text>
       </View>
       <Image
-        source={require('../../assets/miperfil.png')}  
+        source={require('../../assets/miperfil.png')}  // imagen de fondo del usuario
         style={styles.profileImage}
       />
       <View style={styles.languageContainer}>
         <MaterialIcons name="language" size={50} color="white" />
         <View style={styles.languages}>
           <TouchableOpacity style={styles.languageButton} onPress={() => handleLanguageChange('es')}>
-            <Text style={styles.languageText}>Español</Text>
+            <Text style={styles.languageText}>{t('spanish')}</Text>
             <Image
-              source={require('../../assets/espana.png')}  
+              source={require('../../assets/espana.png')}  // bandera de españa para el español
               style={styles.flag}
             />
           </TouchableOpacity>
           <TouchableOpacity style={styles.languageButton} onPress={() => handleLanguageChange('en')}>
-            <Text style={styles.languageText}>Ingles</Text>
+            <Text style={styles.languageText}>{t('english')}</Text>
             <Image
-              source={require('../../assets/usa.png')} 
+              source={require('../../assets/usa.png')}  // bandera de estados unidos para el ingles
               style={styles.flag}
             />
           </TouchableOpacity>
@@ -90,5 +96,4 @@ const styles = StyleSheet.create({
     height: 100,
   },
 });
-
 export default ChangeLanguageScreen;
