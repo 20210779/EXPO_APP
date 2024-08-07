@@ -4,7 +4,9 @@
 //utilizar la direccion IP del servidor y no localhost
 //export const IP = 'http://192.168.137.1';
 //export const IP = 'http://192.168.1.7';
-export const IP = 'http://192.168.169.75';
+export const IP = 'http://192.168.1.7';
+export const SERVER_URL = `${IP}/pemiparts/api/`;
+export const IMAGES_URL = `${IP}/pemiparts/api/images/`;
 
 
 
