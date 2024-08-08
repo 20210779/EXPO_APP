@@ -14,8 +14,8 @@ import {
   ScrollView,
   Alert
 } from "react-native";
-import Input from "../components/Inputs/Input";
-import Buttons from "../components/Buttons/Button";
+import Input from '../input/input';
+//import Buttons from "../components/Buttons/Button";
 import fetchData from "../utils/fetchData";
 
 // Definimos el componente funcional Sesion que recibe la navegación como una prop.

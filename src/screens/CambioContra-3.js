@@ -15,8 +15,8 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Input from "../components/Inputs/Input";
-import Buttons from "../components/Buttons/Button";
+import Input from '../input/input';
+//import Buttons from "../components/Buttons/Button";
 import fetchData from "../utils/fetchData";
 
 // Definimos el componente funcional Sesion que recibe la ruta (route) como prop.

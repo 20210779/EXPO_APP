@@ -1,10 +1,10 @@
-// src/screens/VerifyEmailScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import fetchData from "../utils/fetchData";
 
 const VerifyEmailScreen = () => {
-  const [email, setEmail] = useState('');
+  const [correo, setCorreo] = useState('');
   const navigation = useNavigation();
 
   const validateEmail = (email) => {
@@ -12,10 +12,33 @@ const VerifyEmailScreen = () => {
     return regex.test(email);
   };
 
-  const handlePress = () => {
-    if (validateEmail(email)) {
-      // Navegar a la siguiente pantalla si el correo es válido
-      navigation.navigate('VerifyCodeScreen'); // Reemplaza 'NextScreen' con el nombre de tu próxima pantalla
+  const handlePress = async () => {
+    if (validateEmail(correo)) {
+      const USER_API = "services/admin/usuario.php";
+      try {
+        // Creamos un FormData con el correo electrónico del usuario.
+        const form = new FormData();
+        form.append("usuario_correo", correo);
+
+        // Hacemos una solicitud usando fetchData para enviar el correo electrónico y recibir una respuesta.
+        const DATA = await fetchData(USER_API , "emailPasswordSender", form);
+
+        // Si la solicitud es exitosa (DATA.status es verdadero), limpiamos el correo, mostramos una alerta y navegamos a la siguiente pantalla.
+        if (DATA.status) {
+          setCorreo("");
+          Alert.alert("Éxito", "Un código de verificación ha sido enviado a su correo electrónico");
+          const token = DATA.dataset;
+          navigation.replace("CambioContra2", { token });
+        } else {
+          // En caso de error, mostramos un mensaje de error en una alerta.
+          console.log(DATA);
+          Alert.alert("Error sesión", DATA.error);
+        }
+      } catch (error) {
+        // Capturamos y manejamos errores que puedan ocurrir durante la solicitud.
+        console.error(error, "Error desde Catch");
+        Alert.alert("Error", "Ocurrió un error al iniciar sesión");
+      }
     } else {
       Alert.alert('Correo inválido', 'Por favor ingrese un correo electrónico válido.');
     }
@@ -23,6 +46,7 @@ const VerifyEmailScreen = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#0356A2" />
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>{'<-'}</Text>
       </TouchableOpacity>
@@ -34,8 +58,8 @@ const VerifyEmailScreen = () => {
         style={styles.input}
         placeholder="Correo electrónico"
         placeholderTextColor="#8a8a8a"
-        value={email}
-        onChangeText={setEmail}
+        value={correo}
+        onChangeText={setCorreo}
         keyboardType="email-address"
         autoCapitalize="none"
       />

@@ -1,45 +1,111 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Image, Button } from 'react-native';
-import axios from 'axios';
-import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } from '@env';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, Alert, Image, Button, FlatList } from 'react-native';
+import fetchData from "../utils/fetchData";
+
+const USER_API = "services/admin/usuario.php";
 
 export default function ChatScreen({ route }) {
-  const { name, message, image } = route.params;
-
-  const [inputMessage, setInputMessage] = useState('');
+  const { id, name, image } = route.params;
   const [messages, setMessages] = useState([]);
+  const [messageText, setMessageText] = useState('');
+  const [dataUsuario, setDataUsuario] = useState(null); // Inicializar como null
 
-  const sendMessage = async () => {
-    if (inputMessage.trim() === '') return;
+  //Arreglo para el perfil
+  const [profile, setProfile] = useState({
+    id: " ",
+    name: " ",
+    fullname: " ",
+    email: " ",
+    phone: " ",
+  });
 
-    setMessages(prevMessages => [...prevMessages, { text: inputMessage, fromUser: true }]);
-    setInputMessage('');
-
+  const verifyLogged = async () => {
     try {
-      const apiUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
-
-      const response = await axios.post(apiUrl, new URLSearchParams({
-        Body: inputMessage,
-        From: TWILIO_PHONE_NUMBER,
-        To: '+50360126129', // Número de teléfono de destino
-      }), {
-        auth: {
-          username: TWILIO_ACCOUNT_SID,
-          password: TWILIO_AUTH_TOKEN
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        }
-      });
-
-      console.log('Respuesta de la API:', response.data);
-
-      const botResponse = 'Message sent successfully';
-      setMessages(prevMessages => [...prevMessages, { text: botResponse, fromUser: false }]);
+      const data = await fetchData(USER_API, 'getUser');
+      if (data.session) {
+        console.log(data);
+       
+      } else {
+        console.log(data);
+      }
     } catch (error) {
-      console.error('Error al enviar mensaje:', error.response ? error.response.data : error.message);
+      console.log(error);
     }
   };
+
+  const readProfile = async () => {
+    try {
+      const data = await fetchData(USER_API, "readProfile");
+      const profileData = data.dataset;
+      setProfile({
+        id: profileData.id_usuario,
+        name: profileData.nombre,
+        fullname: profileData.apellido,
+        email: profileData.correo_electronico,
+        phone: profileData.numero_telefono,
+      });
+
+      console.log(data.dataset);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      console.log("Petición hecha");
+    }
+  };
+
+  
+
+  const fetchMessages = async () => {
+    if (!profile|| !profile.id) {
+      Alert.alert('Error', 'ID de usuario no encontrado');
+      return;
+    }
+    try {
+      const data = await fetchData(USER_API, `getMessages&id_remitente=${dataUsuario.id_usuario}&id_destinatario=${id}`);
+      if (data.status === 1) {
+        setMessages(data.dataset);
+      } else {
+        console.error('Error 2:', data);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!profile|| !profile.id) {
+      Alert.alert('Error', 'ID de usuario no encontrado');
+      return;
+    }
+
+    try {
+      const response = await fetchData(USER_API, 'sendMessage'({
+        envio_id: profile.id, // Asegúrate de que este valor no sea nulo
+        recibido_id: id,
+        descripcion: messageText,
+      }));
+      if (response.status === 1) {
+        setMessageText('');
+        fetchMessages(); // Refetch messages to include the newly sent message
+      } else {
+        console.error(response.error);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  }
+  
+
+  useEffect(() => {
+    readProfile();
+    verifyLogged();
+  }, []);
+
+  useEffect(() => {
+    if (dataUsuario && dataUsuario.id_usuario) {
+      fetchMessages(); // Solo fetch messages si dataUsuario está definido
+    }
+  }, [dataUsuario, id]);
 
   return (
     <View style={styles.container}>
@@ -47,15 +113,22 @@ export default function ChatScreen({ route }) {
         <Image source={image} style={styles.logo} />
         <Text style={styles.title}>{name}</Text>
       </View>
-      <View style={styles.messageContent}>
-        <Text style={styles.message}>{message}</Text>
-      </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 600, backgroundColor: '#2B5376', padding: 15 }}>
+      <FlatList
+        data={messages}
+        keyExtractor={(item) => item.id_mensaje.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.messageContainer}>
+            <Text style={styles.message}>{item.descripcion}</Text>
+          </View>
+        )}
+        style={styles.messageList}
+      />
+      <View style={styles.footer}>
         <TextInput
-          style={{ flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 20, paddingHorizontal: 16 }}
+          style={styles.input}
           placeholder="Escribe un mensaje..."
-          value={inputMessage}
-          onChangeText={setInputMessage}
+          value={messageText}
+          onChangeText={setMessageText}
         />
         <Button title="Enviar" onPress={sendMessage} />
       </View>
@@ -79,26 +152,38 @@ const styles = StyleSheet.create({
     height: 40,
     marginRight: 10,
   },
-  loguito: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  messageContent: {
-    fontSize: 14,
-    color: '#fff',
-    marginTop: 20,
-    marginStart: 5,
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
-    paddingTop: 17,
-    marginBottom: 12,
+  },
+  messageList: {
+    flex: 1,
+  },
+  messageContainer: {
+    padding: 10,
+    backgroundColor: '#fff',
+    marginVertical: 5,
+    borderRadius: 5,
   },
   message: {
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: '#2B5376',
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    marginRight: 10,
+    backgroundColor: '#fff',
   },
 });
+ 

@@ -1,9 +1,9 @@
 // Importamos los componentes necesarios de React y React Native, así como algunos componentes personalizados y funciones utilitarias.
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert, Image, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import fetchData from "../utils/fetchData";
-import Buttons from '../components/Buttons/Button';
-import Input from '../components/Inputs/Input';
+//import Buttons from '../components/Buttons/Button';
+import Input from '../input/input';
 
 // Definimos el componente funcional Home que recibe la navegación como prop.
 export default function Home({ navigation }) {

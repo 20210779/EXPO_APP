@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Image, Text } from 'react-native';
+import { View, StyleSheet, Image,Alert, Text } from 'react-native';
 import { Card, Button } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 
+import fetchData from "../utils/fetchData";
+
+const USER_API = "services/admin/usuario.php";
 export default function P_OptionsScreen({ navigation }) {
 
     const GoPerfil = () =>{
@@ -18,17 +21,18 @@ export default function P_OptionsScreen({ navigation }) {
 
       const handleLogout = async () => {
         try {
-          const response = await fetch(`${ip}/pemiparts/api/services/admin/usuario.php?action=logOut`, {
-            method: 'GET'
-          });
+         const DATA = await fetchData(USER_API,'logOut');
+         if (DATA.status){
+            navigation.navigate("LoginNav");
+          };
           const data = await response.json();
           if (data.status) {
             navigation.navigate('Sesion');
           } else {
-            Alert.alert('Error', data.error);
+            console.log('Error', data.error);
           }
         } catch (error) {
-          Alert.alert('Error', 'Ocurrió un error al cerrar la sesión: ' + error);
+          console.log('Error', 'Ocurrió un error al cerrar la sesión: ' + error);
         }
       };
 

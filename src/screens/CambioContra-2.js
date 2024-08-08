@@ -15,9 +15,9 @@ import {
   Alert
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import InputVerification from "../components/Inputs/InputVerification";
-import Buttons from "../components/Buttons/Button";
-import fetchData from "../utils/fetchData";
+//import InputVerification from "../components/Inputs/InputVerification";
+  //import Buttons from "../components/Buttons/Button";
+  import fetchData from "../utils/fetchData";
 
 // Definimos el componente funcional Sesion que recibe la ruta (route) como prop.
 export default function Sesion({ route }) {
@@ -91,11 +91,7 @@ export default function Sesion({ route }) {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={[styles.mainContainer, keyboardVisible && { marginTop: -30 }]}>
           <Text style={styles.LargeText}>Verificación</Text>
-          <InputVerification
-            placeHolder="Codigo"
-            setValor={codigo}
-            setTextChange={setCodigo}
-          />
+         
           <Buttons textoBoton="Siguiente >" accionBoton={handlerEmailVerification} />
         </View>
       </ScrollView>

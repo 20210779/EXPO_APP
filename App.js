@@ -15,7 +15,7 @@ import PerfilScreen from './src/screens/PerfilScreen';
 import EditProfileScreen from './src/screens/EditPerfilScreen';
 import P_OptionsScreen from './src/screens/P_OptionsScreen';
 import ChangeLanguageScreen from './src/screens/ChangeLanguageScreen';
-
+import HomeScreen from './src/screens/HomeScreen';
 //para cambio de contraseña
 import CambioContra from './src/screens/CambioContra';
 import CambioContra1 from './src/screens/CambioContra-1';
@@ -88,6 +88,10 @@ export default function App() {
         <Stack.Screen name="NewPasswordScreen" component={NewPasswordScreen} options={{headerShown:false}}/>
         <Stack.Screen name="POptions" component={P_OptionsScreen} options={{headerShown:false}}/>
         <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="CambioContra" component={CambioContra} />
+        <Stack.Screen name="CambioContra1" component={CambioContra1} />
+        <Stack.Screen name="CambioContra2" component={CambioContra2} />
+        <Stack.Screen name="CambioContra3" component={CambioContra3} />
       </Stack.Navigator>
     </NavigationContainer>
   );

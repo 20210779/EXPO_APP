@@ -11,6 +11,7 @@ import PerfilScreen from '../screens/PerfilScreen';
 import ChatScreen from '../screens/ChatScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import NotifiScreen from "../screens/NotifiScreen";
+import LoginNav from "../navegation/LoginNav.js";
 
 // Botones de navegacion 
 const Tab = createBottomTabNavigator();
@@ -19,28 +20,10 @@ export default function BottomTab() {
   return (
     <Tab.Navigator>
     <Tab.Screen
-      name="MessagesScreen"
-      component={MessagesScreen}
-      options={{
-        title: 'Inicio',
-        headerShown:false,
-        tabBarShowLabel: false, 
-        tabBarActiveTintColor: '#004E92', // Color activo de la pestaña
-        headerStyle: {
-          backgroundColor: '#000000', // Color del header
-        },
-        tabBarActiveBackgroundColor: "#44FFFD",
-        tabBarInactiveBackgroundColor: "#1BC8FF",
-        headerTintColor: '#000000', // Color del texto en el header
-        tabBarIcon: ({ color }) => ( // Función que define el ícono de la pestaña
-          <Entypo name="chat" color={color} size={34} /> // `color` proviene de React Navigation
-        ),
-      }}
-    />
-    <Tab.Screen
       name="HomeScreen"
       component={HomeScreen}
       options={{
+        title: 'Inicio',
         headerShown:false,
         tabBarShowLabel: false, 
         tabBarActiveTintColor: '#FFC300', // Color activo de la pestaña.
@@ -54,6 +37,24 @@ export default function BottomTab() {
           <Entypo name="home" size={34} />
         ),
       }}  
+    />
+     <Tab.Screen
+      name="MessagesScreen"
+      component={MessagesScreen}
+      options={{    
+        headerShown:false,
+        tabBarShowLabel: false, 
+        tabBarActiveTintColor: '#004E92', // Color activo de la pestaña
+        headerStyle: {
+          backgroundColor: '#000000', // Color del header
+        },
+        tabBarActiveBackgroundColor: "#44FFFD",
+        tabBarInactiveBackgroundColor: "#1BC8FF",
+        headerTintColor: '#000000', // Color del texto en el header
+        tabBarIcon: ({ color }) => ( // Función que define el ícono de la pestaña
+          <Entypo name="chat" color={color} size={34} /> // `color` proviene de React Navigation
+        ),
+      }}
     />
     <Tab.Screen
       name="PerfilScreen"
@@ -91,6 +92,14 @@ export default function BottomTab() {
         tabBarIcon: ({ color }) => (
           <Fontisto name="bell-alt" size={34}/>
         ),
+      }}
+    />
+    <Tab.Screen
+      name="LoginNav"
+      component={LoginNav}
+      options={{
+        tabBarButton:() =>null,
+        headerShown: false
       }}
     />
   </Tab.Navigator>

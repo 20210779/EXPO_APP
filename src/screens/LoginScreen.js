@@ -15,6 +15,7 @@ import i18n from './i18n';
 import * as RNRestart from 'react-native-restart';
 import 'intl-pluralrules';
 
+
 export default function LoginScreen({ navigation }) {
   const { t } = useTranslation();
   //Constantes para el formulario
@@ -53,6 +54,8 @@ export default function LoginScreen({ navigation }) {
       console.log(error);
     }
   };
+
+ 
   
   useEffect(() => {
     verifyLoggedFirst();

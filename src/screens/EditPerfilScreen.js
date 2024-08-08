@@ -15,6 +15,30 @@ const EditProfileScreen = () => {
   const [email, setEmail] = useState('JuanP@gmail.com');
   const [phone, setPhone] = useState('12345678');
   const [dui, setDui] = useState('12345678-9');
+  
+  // Actualizar registros en la API
+  const editProfile = async () => {
+    try {
+      const form = new FormData();
+      form.append('idUsuario', idToUpdate);
+      form.append('nombreUsuario', nombre);
+      form.append('apellidoUsuario', apellido);
+      form.append('correoUsuario', correo);
+      const data = await fetchData(USER_API, 'updateRow', form);
+      if (data.status) {
+        console.log(data.message)
+        Alert.alert(data.message);
+        limpiarCampos();
+        fillList();
+        hideModal();
+      } else {
+        Alert.alert('Error ' + data.error);
+      }
+    } catch (error) {
+      Alert.alert('No se pudo acceder a la API ' + error);
+    }
+  };
+
 
   return (
     <View style={styles.container}>

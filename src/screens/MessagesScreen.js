@@ -1,21 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
+import fetchData from "../utils/fetchData";
 import { View, Text, Image, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 
-const messages = [
-  { id: '1', name: 'Gaby Campos', message: 'El almacén 2-B está a punto de...', image: require('../../assets/user1.png') },
-  { id: '2', name: 'KennetLopez', message: 'El producto ha llegado bien al almac...', image: require('../../assets/user2.png') },
-  { id: '3', name: 'Pemi-parts', message: 'Tu almacén 4-C está a punto de venc...', image: require('../../assets/logo_carga.png') },
-  { id: '4', name: 'Pemi-parts', message: 'Tu almacén 5-A está a punto de venc...', image: require('../../assets/logo_carga.png') },
-  { id: '5', name: 'KennetLopez', message: 'El producto ha llegado bien al almac...', image: require('../../assets/user2.png') },
-  { id: '6', name: 'Pemi-parts', message: 'Tu almacén 1-C está a punto de venc...', image: require('../../assets/logo_carga.png') },
-];
 
 export default function MessagesScreen({ navigation }) {
   const [search, setSearch] = useState('');
+  const [contacts, setContacts] = useState([]);
 
-  const filteredMessages = messages.filter((message) =>
-    message.name.toLowerCase().includes(search.toLowerCase()) || message.message.toLowerCase().includes(search.toLowerCase())
-  );
+
+   // URL de la API para el usuario
+   const USER_API = "services/admin/usuario.php";
+
+   const fetchContacts = async () => {
+    try {
+      const data = await fetchData(USER_API, 'readAll'); 
+      if (data.status === 1) {
+        console.log(data);
+        setContacts(data.dataset);  
+      } else {
+        console.log(data);
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.log(error);
+      console.error('Error en los contactos de fetch:', error);
+    }
+  };
+
+  const filteredContacts = contacts.filter((contact) =>
+  contact.nombre.toLowerCase().includes(search.toLowerCase())
+);
+
+  useEffect(() => {
+    fetchContacts();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -35,17 +53,17 @@ export default function MessagesScreen({ navigation }) {
         onChangeText={setSearch}
       />
       <FlatList
-        data={filteredMessages}
-        keyExtractor={(item) => item.id}
+        data={filteredContacts}
+        keyExtractor={(item) => item.id_usuario.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.messageCard}
-            onPress={() => navigation.navigate('ChatScreen', { name: item.name, message: item.message, image: item.image })}
+            onPress={() => navigation.navigate('ChatScreen', { id: item.id_usuario, name: item.nombre, image: item.imagen_usuario  })}
           >
-            <Image source={item.image} style={styles.profileImage} />
+            <Image source={{ uri: item.imagen_usuario }}  style={styles.profileImage} />
             <View style={styles.messageInfo}>
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.message}>{item.message}</Text>
+              <Text style={styles.name}>{item.nombre} {item.apellido}</Text>
+              <Text style={styles.message}>Último mensaje...</Text>
             </View>
           </TouchableOpacity>
         )}
