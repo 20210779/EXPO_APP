@@ -1,5 +1,14 @@
 {
     "change_language": "Change Language",
-    "spanish": "Spanish",
-    "english": "English"
+  "spanish": "Spanish",
+  "english": "English",
+  "profile": "Profile",
+  "welcome_message": "Welcome to the app",
+  "login": {
+    "title": "Enter your credentials to access the program",
+    "email": "Email",
+    "password": "Password",
+    "forgot_password": "Forgot your password?",
+    "login_button": "Login"
   }
+}

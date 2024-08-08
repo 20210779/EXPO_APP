@@ -12,6 +12,7 @@ import BottomTab from "../navegation/BottonTab";
 import fetchData from "../utils/fetchData";
 
 export default function LoginScreen({ navigation }) {
+  //Constantes para el formulario
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   // URL de la API para el usuario
@@ -32,6 +33,27 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  
+  // Función que ayuda a verificar si existe previamente una sesión abierta
+  const verifyLoggedFirst = async () => {
+    try {
+      const data = await fetchData(USER_API, 'getUser');
+      if (data.session) {
+        console.log(data);
+        navigation.navigate("Home");
+      } else {
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  useEffect(() => {
+    verifyLoggedFirst();
+  }, []);
+
+  //Función para el manejo del inicio de sesión
   const handleLogin = async () => {
     if (username === "" || password === "") {
       Alert.alert("Error", "Por favor, complete todos los campos");
@@ -75,7 +97,7 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-
+  //Función para pasar a la recuperación de contraseña
   const GoPassword = () => {
     navigation.navigate("Pass");
   };
