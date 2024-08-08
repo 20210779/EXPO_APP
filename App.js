@@ -77,7 +77,6 @@ export default function App() {
         <Stack.Screen name="Perfil" component={BottomTab} options={{headerShown:false}}/>
         <Stack.Screen name="Pass" component={VerifyEmailScreen} options={{headerShown:false}}/>
         <Stack.Screen name="ChatScreen" component={ChatScreen} options={{headerShown:false}}/>
-
         <Stack.Screen name="ChangeLanguage" component={ChangeLanguageScreen} options={{headerShown:false}}/>
         <Stack.Screen name="VerifyCodeScreen" component={VerifyCodeScreen} options={{headerShown:false}}/>
         <Stack.Screen name="NewPasswordScreen" component={NewPasswordScreen} options={{headerShown:false}}/>
@@ -86,9 +85,8 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
   );
-
-
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
