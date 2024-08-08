@@ -15,6 +15,12 @@ import PerfilScreen from './src/screens/PerfilScreen';
 import EditProfileScreen from './src/screens/EditPerfilScreen';
 import P_OptionsScreen from './src/screens/P_OptionsScreen';
 import ChangeLanguageScreen from './src/screens/ChangeLanguageScreen';
+
+//para cambio de contraseña
+import CambioContra from './src/screens/CambioContra';
+import CambioContra1 from './src/screens/CambioContra-1';
+import CambioContra2 from './src/screens/CambioContra-2';
+import CambioContra3 from './src/screens/CambioContra-3';
 //Librerias
 import * as SplashScreen from 'expo-splash-screen';
 import i18n from './src/screens/i18n';
