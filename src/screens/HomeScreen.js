@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import { useTranslation } from 'react-i18next';
+import i18n from './i18n';
+import * as RNRestart from 'react-native-restart';
+import 'intl-pluralrules';
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState('');
 
   const onDayPress = (day) => {

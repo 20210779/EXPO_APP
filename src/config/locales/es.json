@@ -10,5 +10,26 @@
     "password": "Contraseña",
     "forgot_password": "¿Olvidaste tu contraseña?",
     "login_button": "Iniciar"
+  },
+  "calendar": {
+    "title": "Aquí está el calendario donde podrá ver las fechas ávidas y por a ver, que sean importantes sobre sus almacenes.",
+    "long_term_warehouses": "Almacenes duraderos:",
+    "temporary_warehouses": "Almacenes temporales:",
+    "current_date": "Fecha actual:",
+    "month": "Junio del 2024"
+  },
+  "profile_screen": {
+    "profile": "Perfil",
+    "email": "Correo",
+    "phone": "Teléfono",
+    "id": "Dui",
+    "options": "Opciones"
+  },
+  "profile_options": {
+    "title": "Opciones",
+    "edit": "Editar",
+    "language": "Idioma",
+    "logout": "Cerrar sesión",
+    "back": "Regresar"
   }
 }

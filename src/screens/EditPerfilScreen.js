@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Image, Text, TextInput, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import i18n from './i18n';
+import * as RNRestart from 'react-native-restart';
+import 'intl-pluralrules';
+import { useTranslation } from 'react-i18next';
 
 const EditProfileScreen = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   
   const [name, setName] = useState('Juancho Perez');

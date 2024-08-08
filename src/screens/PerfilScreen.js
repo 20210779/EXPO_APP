@@ -6,8 +6,13 @@ import fetchData from "../utils/fetchData";
 import imageData from "../utils/imageData";
 import * as ImagePicker from "expo-image-picker";
 import foto from "../../assets/miperfil.png";
+import { useTranslation } from 'react-i18next';
+import i18n from './i18n';
+import * as RNRestart from 'react-native-restart';
+import 'intl-pluralrules';
 
 export default function PerfilScreen({ navigation }) {
+  const { t } = useTranslation();
   //Arreglo para el perfil
   const [profile, setProfile] = useState({
     name: " ",

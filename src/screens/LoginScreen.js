@@ -10,8 +10,13 @@ import {
 } from "react-native";
 import BottomTab from "../navegation/BottonTab";
 import fetchData from "../utils/fetchData";
+import { useTranslation } from 'react-i18next';
+import i18n from './i18n';
+import * as RNRestart from 'react-native-restart';
+import 'intl-pluralrules';
 
 export default function LoginScreen({ navigation }) {
+  const { t } = useTranslation();
   //Constantes para el formulario
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

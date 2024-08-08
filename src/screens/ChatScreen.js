@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet ,TextInput,Image,Button} from 'react-native';
+import { View, Text, StyleSheet, TextInput, Image, Button } from 'react-native';
 import axios from 'axios';
+import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } from '@env';
 
 export default function ChatScreen({ route }) {
   const { name, message, image } = route.params;
@@ -11,43 +12,45 @@ export default function ChatScreen({ route }) {
   const sendMessage = async () => {
     if (inputMessage.trim() === '') return;
 
-    // Agregar mensaje del usuario a la lista de mensajes
     setMessages(prevMessages => [...prevMessages, { text: inputMessage, fromUser: true }]);
     setInputMessage('');
 
     try {
-      // Reemplaza '192.122.176.73' con la IP de tu máquina
-      const apiUrl = 'http://192.122.176.73:3001/message';
-      console.log('Enviando mensaje a:', apiUrl);
+      const apiUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
 
-      // Llamar a tu servidor API
-      const response = await axios.post(apiUrl, { message: inputMessage });
+      const response = await axios.post(apiUrl, new URLSearchParams({
+        Body: inputMessage,
+        From: TWILIO_PHONE_NUMBER,
+        To: '+50360126129', // Número de teléfono de destino
+      }), {
+        auth: {
+          username: TWILIO_ACCOUNT_SID,
+          password: TWILIO_AUTH_TOKEN
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      });
 
       console.log('Respuesta de la API:', response.data);
 
-      // Agregar respuesta del modelo a la lista de mensajes
-      const botResponse = response.data.message; // Ajusta según la estructura de respuesta de tu API
+      const botResponse = 'Message sent successfully';
       setMessages(prevMessages => [...prevMessages, { text: botResponse, fromUser: false }]);
     } catch (error) {
-      console.error('Error al enviar mensaje:', error);
-      // Manejo de errores (mostrar un mensaje de error o volver a intentar, según sea necesario)
+      console.error('Error al enviar mensaje:', error.response ? error.response.data : error.message);
     }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          source={image} // Reemplaza con la ruta de tu logo
-          style={styles.logo}
-        />
+        <Image source={image} style={styles.logo} />
         <Text style={styles.title}>{name}</Text>
       </View>
       <View style={styles.messageContent}>
-      <Text style={styles.message}>{message}</Text>
+        <Text style={styles.message}>{message}</Text>
       </View>
-      {/* Entrada de mensaje */}
-      <View style={{ flexDirection: 'row', alignItems: 'center' , marginTop:600, backgroundColor: '#2B5376', padding:15}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 600, backgroundColor: '#2B5376', padding: 15 }}>
         <TextInput
           style={{ flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 20, paddingHorizontal: 16 }}
           placeholder="Escribe un mensaje..."
@@ -56,7 +59,6 @@ export default function ChatScreen({ route }) {
         />
         <Button title="Enviar" onPress={sendMessage} />
       </View>
-      {/* Aquí puedes agregar más contenido relacionado con el chat */}
     </View>
   );
 }

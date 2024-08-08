@@ -10,5 +10,26 @@
     "password": "Password",
     "forgot_password": "Forgot your password?",
     "login_button": "Login"
+  },
+  "calendar": {
+    "title": "Here is the calendar where you can see important dates for your warehouses.",
+    "long_term_warehouses": "Long-term warehouses:",
+    "temporary_warehouses": "Temporary warehouses:",
+    "current_date": "Current date:",
+    "month": "June 2024"
+  },
+  "profile_screen": {
+    "profile": "Profile",
+    "email": "Email",
+    "phone": "Phone",
+    "id": "ID",
+    "options": "Options"
+  },
+  "profile_options": {
+    "title": "Options",
+    "edit": "Edit",
+    "language": "Language",
+    "logout": "Logout",
+    "back": "Back"
   }
 }
