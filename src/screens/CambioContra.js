@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import fetchData from "../utils/fetchData";
 //import Buttons from '../components/Buttons/Button';
-import Input from '../input/input';
+import Input from '../components/input/input';
 
 // Definimos el componente funcional Home que recibe la navegación como prop.
 export default function Home({ navigation }) {

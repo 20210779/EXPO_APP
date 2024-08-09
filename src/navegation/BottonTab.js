@@ -16,7 +16,7 @@ import LoginNav from "../navegation/LoginNav.js";
 // Botones de navegacion 
 const Tab = createBottomTabNavigator();
 
-export default function BottomTab() {
+export default function BottomTab({logueado, setLogueado}) {
   return (
     <Tab.Navigator>
     <Tab.Screen
@@ -97,10 +97,11 @@ export default function BottomTab() {
     <Tab.Screen
       name="LoginNav"
       component={LoginNav}
-      options={{
-        tabBarButton:() =>null,
+      //Escondemos la opcion para que no aparezca en el BottomTab
+      options={({ route }) => ({
+        tabBarButton: () => null,
         headerShown: false
-      }}
+      })}
     />
   </Tab.Navigator>
   

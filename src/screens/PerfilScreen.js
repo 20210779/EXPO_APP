@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, StyleSheet, Image, Text } from "react-native";
 
 import { Card, Button } from "react-native-paper";
@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import * as RNRestart from 'react-native-restart';
 import 'intl-pluralrules';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function PerfilScreen({ navigation }) {
   const { t } = useTranslation();
@@ -36,7 +37,7 @@ export default function PerfilScreen({ navigation }) {
       setProfile({
         name: profileData.nombre,
         fullname: profileData.apellido,
-        email: profileData.correo_electronico,
+        email: profileData.correo,
         phone: profileData.numero_telefono,
         image: imageUrl,
       });
@@ -48,6 +49,12 @@ export default function PerfilScreen({ navigation }) {
       console.log("Petición hecha");
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      readProfile();
+    }, [])
+  )
 
   useEffect(() => {
     readProfile();
@@ -118,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1984E2",
   },
   profileImage: {
-    width: "100%",
+    width: '100%',
     height: 230,
   },
   name: {

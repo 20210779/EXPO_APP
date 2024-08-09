@@ -15,7 +15,7 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Input from '../input/input';
+import Input from '../components/input/input';
 //import Buttons from "../components/Buttons/Button";
 import fetchData from "../utils/fetchData";
 

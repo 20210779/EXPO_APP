@@ -1,44 +1,105 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Image, Text, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Image, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import fetchData from "../utils/fetchData";
+import imageData from "../utils/imageData";
+import * as ImagePicker from "expo-image-picker";
 import i18n from './i18n';
 import * as RNRestart from 'react-native-restart';
 import 'intl-pluralrules';
-import { useTranslation } from 'react-i18next';
 
 const EditProfileScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  
-  const [name, setName] = useState('Juancho Perez');
-  const [email, setEmail] = useState('JuanP@gmail.com');
-  const [phone, setPhone] = useState('12345678');
-  const [dui, setDui] = useState('12345678-9');
-  
-  // Actualizar registros en la API
-  const editProfile = async () => {
+
+  const USER_API = "services/admin/usuario.php";
+  const [profile, setProfile] = useState({
+    name: "",
+    fullname: "",
+    email: "",
+    phone: "",
+    image: null,
+  });
+
+  const [name, setName] = useState('');
+  const [fullname, setFullname] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [image, setImage] = useState(null);
+
+  const readProfile = async () => {
     try {
-      const form = new FormData();
-      form.append('idUsuario', idToUpdate);
-      form.append('nombreUsuario', nombre);
-      form.append('apellidoUsuario', apellido);
-      form.append('correoUsuario', correo);
-      const data = await fetchData(USER_API, 'updateRow', form);
-      if (data.status) {
-        console.log(data.message)
-        Alert.alert(data.message);
-        limpiarCampos();
-        fillList();
-        hideModal();
-      } else {
-        Alert.alert('Error ' + data.error);
-      }
+      const data = await fetchData(USER_API, "readProfile");
+      const profileData = data.dataset;
+      const imageUrl = profileData.imagen_usuario
+        ? await imageData("usuarios", profileData.imagen_usuario)
+        : Image.resolveAssetSource(require('../../assets/miperfil.png')).uri;
+
+      setProfile({
+        name: profileData.nombre,
+        fullname: profileData.apellido,
+        email: profileData.correo,
+        phone: profileData.numero_telefono,
+        image: imageUrl,
+      });
+
+      setName(profileData.nombre);
+      setFullname(profileData.apellido);
+      setEmail(profileData.correo);
+      setPhone(profileData.numero_telefono);
+      setImage(imageUrl);
     } catch (error) {
-      Alert.alert('No se pudo acceder a la API ' + error);
+      console.error(error);
     }
   };
 
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const editProfile = async () => {
+    try {
+      const form = new FormData();
+      form.append('nombreUsuario', name);
+      form.append('apellidoUsuario', fullname);
+      form.append('correoUsuario', email);
+      form.append('telefonoUsuario', phone);
+
+      if (image) {
+        const uriParts = image.split(".");
+        const fileType = uriParts[uriParts.length - 1];
+        form.append("imagenUsuario", {
+          uri: image,
+          name: `photo.${fileType}`,
+          type: `image/${fileType}`,
+        });
+      }
+      const data = await fetchData(USER_API, 'editProfile', form);
+      if (data.status) {
+        Alert.alert(data.message);
+        readProfile();
+      } else {
+        Alert.alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      Alert.alert('No se pudo acceder a la API: ' + error.message);
+    }
+  };
+
+  useEffect(() => {
+    readProfile();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -49,7 +110,7 @@ const EditProfileScreen = () => {
         <Text style={styles.headerText}>Editar perfil de usuario</Text>
       </View>
       <Image
-        source={require('../../assets/miperfil.png')}  // Reemplaza con la ruta de tu logo
+        source={{ uri: image || profile.image }}
         style={styles.profileImage}
       />
       <View style={styles.formContainer}>
@@ -59,30 +120,38 @@ const EditProfileScreen = () => {
           value={name}
           onChangeText={setName}
         />
+        <Text style={styles.label}>Apellido:</Text>
+        <TextInput
+          style={styles.input}
+          value={fullname}
+          onChangeText={setFullname}
+        />
         <Text style={styles.label}>Correo:</Text>
         <TextInput
           style={styles.input}
           value={email}
           onChangeText={setEmail}
         />
-        <Text style={styles.label}>Telefono:</Text>
+        <Text style={styles.label}>Teléfono:</Text>
         <TextInput
           style={styles.input}
           value={phone}
           onChangeText={setPhone}
         />
-        <Text style={styles.label}>Dui:</Text>
-        <TextInput
-          style={styles.input}
-          value={dui}
-          onChangeText={setDui}
-        />
         <View style={styles.imageUploadContainer}>
           <Text style={styles.label}>Editar imagen:</Text>
-          <TouchableOpacity style={styles.imageUploadButton}>
+          <TouchableOpacity
+            style={styles.imageUploadButton}
+            onPress={pickImage}
+          >
             <MaterialIcons name="add-photo-alternate" size={24} color="white" />
           </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          onPress={editProfile}
+          style={styles.saveButton}>
+          <Text style={styles.label}>Guardar</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -98,23 +167,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     backgroundColor: '#1976D2',
-  },
-  logo: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-  },
-  title: {
-    fontSize: 20,
-    color: '#fff',
-  },
-  infoH:{
-    width: '100%',
-    padding: 9,
-    alignContent: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#004E92',
   },
   headerText: {
     color: 'white',
@@ -152,6 +204,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginLeft: 10,
+  },
+  saveButton: {
+    padding: 10,
+    marginTop: 10,
+    backgroundColor: "#334195",
+    maxWidth: '100%',
+    textAlign: 'center'
   },
 });
 

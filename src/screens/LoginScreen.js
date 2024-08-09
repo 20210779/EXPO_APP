@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import * as RNRestart from 'react-native-restart';
 import 'intl-pluralrules';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export default function LoginScreen({ navigation }) {
@@ -23,7 +24,7 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
   // URL de la API para el usuario
   const USER_API = "services/admin/usuario.php";
-  
+
   // Función que ayuda a verificar si existe previamente una sesión abierta
   const verifyLogged = async () => {
     try {
@@ -39,7 +40,7 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
-  
+
   // Función que ayuda a verificar si existe previamente una sesión abierta
   const verifyLoggedFirst = async () => {
     try {
@@ -55,42 +56,49 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
- 
-  
+
+
+  useFocusEffect(
+    useCallback(() => {
+      verifyLoggedFirst();
+    }, [])
+  )
+
   useEffect(() => {
     verifyLoggedFirst();
   }, []);
+
 
   //Función para el manejo del inicio de sesión
   const handleLogin = async () => {
     if (username === "" || password === "") {
       Alert.alert("Error", "Por favor, complete todos los campos");
     } else {
-      try{
-      // Creación del formulario para la petición
-      const formData = new FormData();
-      formData.append("correo", username);
-      formData.append("clave", password);
-      // Petición para iniciar sesión.
-      const responseData = await fetchData(USER_API, 'logIn', formData);
-      
-      if (responseData.status) {
-        Alert.alert(responseData.message);
-        setTimeout(()=>{
-          verifyLogged();
-        }, 1500)
-      }
-      else {
-        Alert.alert("Error", responseData.error);
-        console.log(responseData.error);
-        handleLogOut();
-      }
-      }catch(error){
+      try {
+        // Creación del formulario para la petición
+        const formData = new FormData();
+        formData.append("correo", username);
+        formData.append("clave", password);
+        // Petición para iniciar sesión.
+        const responseData = await fetchData(USER_API, 'logIn', formData);
+
+        if (responseData.status) {
+          Alert.alert(responseData.message);
+          setTimeout(() => {
+            verifyLogged();
+          }, 1500)
+        }
+        else {
+          Alert.alert("Error", responseData.error);
+          console.log(responseData.error);
+          handleLogOut();
+        }
+      } catch (error) {
         console.log(error);
       }
     }
   };
-  
+
   // Manejo de cierre de sesión
   const handleLogOut = async () => {
     try {

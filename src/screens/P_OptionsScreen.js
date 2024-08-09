@@ -1,40 +1,41 @@
 import React from 'react';
-import { View, StyleSheet, Image,Alert, Text } from 'react-native';
+import { View, StyleSheet, Image, Alert, Text } from 'react-native';
 import { Card, Button } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
+import RNRestart from 'react-native-restart';
 
 import fetchData from "../utils/fetchData";
 
 const USER_API = "services/admin/usuario.php";
 export default function P_OptionsScreen({ navigation }) {
 
-    const GoPerfil = () =>{
-        navigation.navigate("EditProfile");
-      }
-      const BackPerfil = () =>{
-        navigation.navigate("Perfil");
-      }
-      const GoLanguage = () =>{
-        navigation.navigate("ChangeLanguage");
-      }
+  const GoPerfil = () => {
+    navigation.navigate("EditProfile");
+  }
+  const BackPerfil = () => {
+    navigation.navigate("Perfil");
+  }
+  const GoLanguage = () => {
+    navigation.navigate("ChangeLanguage");
+  }
 
 
-      const handleLogout = async () => {
-        try {
-         const DATA = await fetchData(USER_API,'logOut');
-         if (DATA.status){
-            navigation.navigate("LoginNav");
-          };
-          const data = await response.json();
-          if (data.status) {
-            navigation.navigate('Sesion');
-          } else {
-            console.log('Error', data.error);
-          }
-        } catch (error) {
-          console.log('Error', 'Ocurrió un error al cerrar la sesión: ' + error);
-        }
+  const handleLogout = async () => {
+    try {
+      const DATA = await fetchData(USER_API, 'logOut');
+      if (DATA.status) {
+        navigation.navigate("LoginNav");
       };
+      const data = await response.json();
+      if (data.status) {
+        navigation.navigate('LoginNav');
+      } else {
+        console.log('Error', data.error);
+      }
+    } catch (error) {
+      console.log('Error', 'Ocurrió un error al cerrar la sesión: ' + error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -46,16 +47,16 @@ export default function P_OptionsScreen({ navigation }) {
         <Text style={styles.title}>Pemi-parts</Text>
       </View>
       <Image
-          source={require('../../assets/miperfil.png')}  // Reemplaza con la ruta de tu logo
-          style={styles.profileImage}
-        />
-         <View style={styles.infoH}>
-         <Text style={styles.name}>Opciones</Text>
-        </View>
-        
+        source={require('../../assets/miperfil.png')}  // Reemplaza con la ruta de tu logo
+        style={styles.profileImage}
+      />
+      <View style={styles.infoH}>
+        <Text style={styles.name}>Opciones</Text>
+      </View>
+
       <Card style={styles.card}>
         <View style={styles.optionsContainer}>
-          
+
           <View style={styles.option}>
             <MaterialIcons name="edit" size={24} color="white" />
             <Button mode="contained" style={styles.button} onPress={GoPerfil}>
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 10,
   },
-  infoH:{
+  infoH: {
     width: '100%',
     padding: 9,
     alignContent: 'center',

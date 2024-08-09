@@ -1,45 +1,90 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import fetchData from "../utils/fetchData";
-import { View, Text, Image, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-
+import { View, Text, Image, TextInput, StyleSheet, RefreshControl } from 'react-native';
+import * as Constantes from '../utils/constantes';
+import { useFocusEffect } from '@react-navigation/native';
+import Chip from '../components/chip/Chip';
+import MessagesList from '../components/chatComponents/MessagesList';
+import ContactsList from '../components/chatComponents/ContactsList';
 
 export default function MessagesScreen({ navigation }) {
   const [search, setSearch] = useState('');
   const [contacts, setContacts] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [selectedTab, setSelectedTab] = useState('messages');
+  const [refreshing, setRefreshing] = useState(false); // Estado para manejar el refresco
 
+  const USER_API = "services/admin/usuario.php";
+  const CHAT_API = "services/admin/chat.php";
+  const SERVER_URL = Constantes.IMAGES_URL;
 
-   // URL de la API para el usuario
-   const USER_API = "services/admin/usuario.php";
-
-   const fetchContacts = async () => {
+  const fetchContacts = async () => {
     try {
-      const data = await fetchData(USER_API, 'readAll'); 
+      const data = await fetchData(USER_API, 'readAll');
       if (data.status === 1) {
-        console.log(data);
-        setContacts(data.dataset);  
+        const registros = data.dataset.map((item) => ({
+          contacto: `${item.nombre} ${item.apellido}`,
+          usuario_receptor: item.id_usuario,
+          mensaje: `Envia un mensaje a ${item.nombre} ${item.apellido}`,
+          foto_receptor: `${SERVER_URL}usuarios/${item.imagen_usuario}`,
+        }));
+        setContacts(registros);
       } else {
-        console.log(data);
         console.error(data.error);
       }
     } catch (error) {
-      console.log(error);
-      console.error('Error en los contactos de fetch:', error);
+      console.error('Error fetching contacts:', error);
     }
   };
 
-  const filteredContacts = contacts.filter((contact) =>
-  contact.nombre.toLowerCase().includes(search.toLowerCase())
-);
+  const fetchFillMessages = async () => {
+    try {
+      const data = await fetchData(CHAT_API, 'readAllMessagesRecived');
+      if (data.status === 1) {
+        const registros = data.dataset.map((item) => ({
+          usuario_emisor: item.nombre_emisor,
+          usuario_receptor: item.nombre_receptor,
+          id_usuario_receptor: item.id_usuario_receptor,
+          id_usuario_emisor: item.id_usuario_emisor,
+          mensaje: item.mensaje,
+          foto_emisor: `${SERVER_URL}usuarios/${item.imagen_usuario_emisor}`,
+          foto_receptor: `${SERVER_URL}usuarios/${item.imagen_usuario_receptor}`,
+        }));
+
+        setMessages(registros);
+      } else {
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
 
   useEffect(() => {
     fetchContacts();
+    fetchFillMessages();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchContacts();
+      fetchFillMessages();
+    }, [])
+  );
+
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    Promise.all([fetchContacts(), fetchFillMessages()])
+      .then(() => setRefreshing(false))
+      .catch(() => setRefreshing(false));
   }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={require('../../assets/logo_carga.png')} // Reemplaza con la ruta de tu logo
+          source={require('../../assets/logo_carga.png')}
           style={styles.logo}
         />
         <Text style={styles.title}>Pemi-parts</Text>
@@ -52,23 +97,30 @@ export default function MessagesScreen({ navigation }) {
         value={search}
         onChangeText={setSearch}
       />
-      <FlatList
-        data={filteredContacts}
-        keyExtractor={(item) => item.id_usuario.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.messageCard}
-            onPress={() => navigation.navigate('ChatScreen', { id: item.id_usuario, name: item.nombre, image: item.imagen_usuario  })}
-          >
-            <Image source={{ uri: item.imagen_usuario }}  style={styles.profileImage} />
-            <View style={styles.messageInfo}>
-              <Text style={styles.name}>{item.nombre} {item.apellido}</Text>
-              <Text style={styles.message}>Último mensaje...</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-        style={styles.messageList}
-      />
+      <View style={styles.chipContainer}>
+        <Chip
+          label="Mensajes"
+          selected={selectedTab === 'messages'}
+          onPress={() => setSelectedTab('messages')}
+        />
+        <Chip
+          label="Contactos"
+          selected={selectedTab === 'contacts'}
+          onPress={() => setSelectedTab('contacts')}
+        />
+      </View>
+
+      {selectedTab === 'messages' ? (
+        <MessagesList data={messages} navigation={navigation} 
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }/>
+      ) : (
+        <ContactsList contacts={contacts} navigation={navigation}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }/>
+      )}
     </View>
   );
 }
@@ -107,45 +159,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 5,
   },
-  messageList: {
-    flex: 1,
-  },
-  messageCard: {
+  chipContainer: {
     flexDirection: 'row',
-    padding: 10,
-    backgroundColor: '#ffffff',
-    borderRadius: 5,
-    marginBottom: 10,
-    alignItems: 'center',
-  },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  messageInfo: {
-    marginLeft: 10,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  message: {
-    fontSize: 14,
-    color: '#555',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 10,
-    backgroundColor: '#1e88e5',
-  },
-  footerIcon: {
-    alignItems: 'center',
-  },
-  icon: {
-    width: 30,
-    height: 30,
-    tintColor: '#fff',
+    justifyContent: 'center',
+    marginVertical: 10,
   },
 });

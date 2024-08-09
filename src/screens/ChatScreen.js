@@ -1,128 +1,131 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, Image, Button, FlatList } from 'react-native';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Alert,
+  Image,
+  Button,
+  FlatList,
+  ActivityIndicator
+} from 'react-native';
 import fetchData from "../utils/fetchData";
+import { useFocusEffect } from '@react-navigation/native';
+import * as Constantes from '../utils/constantes';
 
-const USER_API = "services/admin/usuario.php";
+const CHAT_API = "services/admin/chat.php";
 
 export default function ChatScreen({ route }) {
   const { id, name, image } = route.params;
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
-  const [dataUsuario, setDataUsuario] = useState(null); // Inicializar como null
-
-  //Arreglo para el perfil
-  const [profile, setProfile] = useState({
-    id: " ",
-    name: " ",
-    fullname: " ",
-    email: " ",
-    phone: " ",
-  });
-
-  const verifyLogged = async () => {
-    try {
-      const data = await fetchData(USER_API, 'getUser');
-      if (data.session) {
-        console.log(data);
-       
-      } else {
-        console.log(data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const readProfile = async () => {
-    try {
-      const data = await fetchData(USER_API, "readProfile");
-      const profileData = data.dataset;
-      setProfile({
-        id: profileData.id_usuario,
-        name: profileData.nombre,
-        fullname: profileData.apellido,
-        email: profileData.correo_electronico,
-        phone: profileData.numero_telefono,
-      });
-
-      console.log(data.dataset);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      console.log("Petición hecha");
-    }
-  };
-
-  
+  const [loading, setLoading] = useState(true);
+  const SERVER_URL = Constantes.IMAGES_URL;
 
   const fetchMessages = async () => {
-    if (!profile|| !profile.id) {
-      Alert.alert('Error', 'ID de usuario no encontrado');
-      return;
-    }
+    setLoading(true);
     try {
-      const data = await fetchData(USER_API, `getMessages&id_remitente=${dataUsuario.id_usuario}&id_destinatario=${id}`);
-      if (data.status === 1) {
-        setMessages(data.dataset);
-      } else {
-        console.error('Error 2:', data);
-      }
+      const form = new FormData();
+      form.append('idChat', id);
+
+      // Simular un retraso de 1500 ms
+      const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+      await delay(1500);
+
+      // Fetch mensajes enviados
+      const sentData = await fetchData(CHAT_API, 'readAllMessagesSendsChat', form);
+      const sentMessages = sentData.status === 1
+        ? sentData.dataset.map(msg => ({ ...msg, isSender: true }))
+        : [];
+
+      // Fetch mensajes recibidos
+      const receivedData = await fetchData(CHAT_API, 'readAllMessagesRecivedChat', form);
+      const receivedMessages = receivedData.status === 1
+        ? receivedData.dataset.map(msg => ({ ...msg, isSender: false }))
+        : [];
+
+      // Combinar ambos arrays y ordenarlos por fecha
+      const combinedMessages = [...sentMessages, ...receivedMessages].sort(
+        (a, b) => new Date(a.fecha) - new Date(b.fecha)
+      );
+
+      setMessages(combinedMessages);
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.log('Error fetching messages:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const sendMessage = async () => {
-    if (!profile|| !profile.id) {
+    if (!id) {
       Alert.alert('Error', 'ID de usuario no encontrado');
       return;
     }
-
     try {
-      const response = await fetchData(USER_API, 'sendMessage'({
-        envio_id: profile.id, // Asegúrate de que este valor no sea nulo
-        recibido_id: id,
-        descripcion: messageText,
-      }));
+      const form = new FormData();
+      form.append('idUsuario', id);
+      form.append('mensaje', messageText);
+      const response = await fetchData(CHAT_API, 'createRow', form);
       if (response.status === 1) {
         setMessageText('');
         fetchMessages(); // Refetch messages to include the newly sent message
       } else {
-        console.error(response.error);
+        alert(response.error);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.log('Error sending message:', error);
     }
-  }
-  
+  };
 
   useEffect(() => {
-    readProfile();
-    verifyLogged();
-  }, []);
+    const fetchDataAndSetMessages = async () => {
+      await fetchMessages();
+    };
 
-  useEffect(() => {
-    if (dataUsuario && dataUsuario.id_usuario) {
-      fetchMessages(); // Solo fetch messages si dataUsuario está definido
-    }
-  }, [dataUsuario, id]);
+    fetchDataAndSetMessages();
+  }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchMessages();
+    }, [id])
+  );
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={image} style={styles.logo} />
+        <Image source={{ uri: image }} style={styles.logo} />
         <Text style={styles.title}>{name}</Text>
       </View>
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id_mensaje.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.messageContainer}>
-            <Text style={styles.message}>{item.descripcion}</Text>
-          </View>
-        )}
-        style={styles.messageList}
-      />
+      {loading ? (
+        <ActivityIndicator style={styles.loader} size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={messages}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View
+              style={[
+                styles.messageContainer,
+                item.isSender ? styles.messageSent : styles.messageReceived,
+              ]}
+            >
+              <Image 
+                source={{ uri: item.isSender ? `${SERVER_URL}usuarios/${item.imagen_usuario_emisor}` : image }} 
+                style={styles.messageImage} 
+              />
+              <View>
+                <Text style={styles.messageTitle}>{item.nombre_emisor}</Text>
+                <Text style={styles.message}>{item.mensaje}</Text>
+                <Text style={styles.date}>{new Date(item.fecha).toLocaleString()}</Text>
+              </View>
+            </View>
+          )}
+          style={styles.messageList}
+        />
+      )}
       <View style={styles.footer}>
         <TextInput
           style={styles.input}
@@ -161,14 +164,40 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
-    backgroundColor: '#fff',
-    marginVertical: 5,
     borderRadius: 5,
+    marginVertical: 5,
+    maxWidth: '80%',
+  },
+  messageTitle: {
+    fontSize: 16,
+    color: '#2B5376',
+    maxWidth: 150,
   },
   message: {
     fontSize: 16,
     color: '#000',
+    maxWidth: 100,
+  },
+  messageSent: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#fff', // Color morado para los mensajes enviados
+  },
+  messageReceived: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#FFFFFF',
+  },
+  messageImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginRight: 10,
+  },
+  date: {
+    fontSize: 12,
+    color: '#666',
   },
   footer: {
     flexDirection: 'row',
@@ -186,4 +215,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
- 

@@ -14,7 +14,7 @@ import {
   ScrollView,
   Alert
 } from "react-native";
-import Input from '../input/input';
+import Input from '../components/input/input';
 //import Buttons from "../components/Buttons/Button";
 import fetchData from "../utils/fetchData";
 

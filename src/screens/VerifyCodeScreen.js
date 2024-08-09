@@ -1,31 +1,21 @@
-// Importamos los componentes necesarios de React y React Native, así como algunos componentes personalizados y funciones utilitarias.
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StatusBar,
+  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  Alert, Keyboard, KeyboardAvoidingView, Platform,
+  ScrollView, StatusBar
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import fetchData from "../utils/fetchData";
 
-// Definimos el componente funcional Sesion que recibe la ruta (route) como prop.
 export default function Sesion({ route }) {
   const { token } = route.params;
   const [codigo, setCodigo] = useState("");
   const [keyboardVisible, setKeyboardVisible] = useState(false);
-  
+  const inputsRef = useRef([]);
+
   const USER_API = "services/admin/usuario.php";
   const navigation = useNavigation();
 
-  // Función asincrónica para manejar la verificación del código de verificación.
   const handlerEmailVerification = async () => {
     try {
       const form = new FormData();
@@ -43,24 +33,19 @@ export default function Sesion({ route }) {
         Alert.alert("Error sesión", DATA.error);
       }
     } catch (error) {
-      console.error(error, "Error desde Catch");
+      console.error(error, "Error desde Catch codi");
       Alert.alert("Error", "Ocurrió un error al iniciar sesión");
     }
   };
 
-  // Efecto de useEffect para manejar la visibilidad del teclado.
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      }
+      () => setKeyboardVisible(true)
     );
     const keyboardDidHideListener = Keyboard.addListener(
       "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      }
+      () => setKeyboardVisible(false)
     );
 
     return () => {
@@ -69,18 +54,13 @@ export default function Sesion({ route }) {
     };
   }, []);
 
-  // Manejar el cambio en cada campo de entrada del código
   const handleCodeChange = (index, value) => {
     const newCode = codigo.split('');
     newCode[index] = value;
     setCodigo(newCode.join(''));
     
-    // Mover al siguiente campo si el valor es ingresado
-    if (value && index < 5) {
-      const nextInput = document.querySelectorAll('input')[index + 1];
-      if (nextInput) {
-        nextInput.focus();
-      }
+    if (value && index < 5 && inputsRef.current[index + 1]) {
+      inputsRef.current[index + 1].focus();
     }
   };
 
@@ -98,12 +78,13 @@ export default function Sesion({ route }) {
             {[...Array(6)].map((_, index) => (
               <TextInput
                 key={index}
+                ref={(input) => inputsRef.current[index] = input}
                 style={styles.codeInput}
                 keyboardType="numeric"
                 maxLength={1}
                 onChangeText={(text) => handleCodeChange(index, text)}
                 value={codigo[index] || ''}
-                autoFocus={index === 0} // Enfocar automáticamente el primer campo
+                autoFocus={index === 0}
               />
             ))}
           </View>
@@ -143,7 +124,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    color: '#fff',
+    color: '#0356A2',
     textAlign: 'center',
     marginBottom: 20,
   },
