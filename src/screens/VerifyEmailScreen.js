@@ -13,6 +13,7 @@ import {
   StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import Input from "../components/input/input";
 import fetchData from "../utils/fetchData";
 
 export default function Sesion({ route }) {
