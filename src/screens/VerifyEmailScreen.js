@@ -35,7 +35,7 @@ export default function Sesion({ route }) {
         setCodigo("");
         Alert.alert("Éxito", "Verificación Correcta");
         const tokenV = DATA.dataset;
-        navigation.replace("CambioContra3", { tokenV });
+        navigation.replace("VerifyCode", { tokenV });
       } else {
         console.log(DATA);
         Alert.alert("Error sesión", DATA.error);

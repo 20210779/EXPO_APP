@@ -17,7 +17,7 @@ import 'intl-pluralrules';
 import { useFocusEffect } from '@react-navigation/native';
 
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, logueado, setLogueado }) {
   const { t } = useTranslation();
   //Constantes para el formulario
   const [username, setUsername] = useState("");
@@ -31,7 +31,8 @@ export default function LoginScreen({ navigation }) {
       const data = await fetchData(USER_API, 'getUser');
       if (data.session) {
         console.log(data);
-        navigation.navigate("Home");
+        setLogueado(true);
+        //navigation.navigate("Home");
       } else {
         console.log(data);
       }
@@ -47,7 +48,8 @@ export default function LoginScreen({ navigation }) {
       const data = await fetchData(USER_API, 'getUser');
       if (data.session) {
         console.log(data);
-        navigation.navigate("Home");
+        //navigation.navigate("Home");
+        setLogueado(true);
       } else {
         console.log(data);
       }
@@ -91,7 +93,6 @@ export default function LoginScreen({ navigation }) {
         else {
           Alert.alert("Error", responseData.error);
           console.log(responseData.error);
-          handleLogOut();
         }
       } catch (error) {
         console.log(error);
@@ -115,7 +116,7 @@ export default function LoginScreen({ navigation }) {
 
   //Función para pasar a la recuperación de contraseña
   const GoPassword = () => {
-    navigation.navigate("Pass");
+    navigation.navigate("VerifyEmail");
   };
 
   return (

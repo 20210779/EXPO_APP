@@ -17,11 +17,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
-    backgroundColor: '#1e88e5',
+    backgroundColor: '#42a5f5',
     marginHorizontal: 5,
   },
   selectedChip: {
-    backgroundColor: '#42a5f5',
+    backgroundColor: '#1e88e5',
   },
   chipText: {
     color: '#fff',

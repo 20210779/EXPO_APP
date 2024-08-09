@@ -1,66 +1,70 @@
 // Hooks de React
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 // Utilidades de React Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+// Importaciones de pantallas
 import LoginScreen from './src/screens/LoginScreen';
-import NavStack from './src/navegation/NavStack';
-import VerifyEmailScreen from './src/screens/VerifyEmailScreen'
 import BottomTab from './src/navegation/BottonTab';
-import NewPasswordScreen from './src/screens/NewPasswordScreen';
+import VerifyEmailScreen from './src/screens/VerifyEmailScreen';
 import VerifyCodeScreen from './src/screens/VerifyCodeScreen';
+import NewPasswordScreen from './src/screens/NewPasswordScreen';
 import ChatScreen from './src/screens/ChatScreen';
 import PerfilScreen from './src/screens/PerfilScreen';
 import EditProfileScreen from './src/screens/EditPerfilScreen';
 import P_OptionsScreen from './src/screens/P_OptionsScreen';
 import ChangeLanguageScreen from './src/screens/ChangeLanguageScreen';
-import HomeScreen from './src/screens/HomeScreen';
-//para cambio de contraseña
 import CambioContra from './src/screens/CambioContra';
 import CambioContra1 from './src/screens/CambioContra-1';
 import CambioContra2 from './src/screens/CambioContra-2';
 import CambioContra3 from './src/screens/CambioContra-3';
-//Librerias
+import fetchData from "./src/utils/fetchData";
+// Librerías
 import * as SplashScreen from 'expo-splash-screen';
-import i18n from './src/screens/i18n';
 import 'intl-pluralrules';
-
-
-
-
 
 const Stack = createNativeStackNavigator();
 
-//Componente principal
 export default function App() {
-
-  // appIsReady: Variable para indicar si la aplicación ya está lista
-  // setAppIsReady: Función para actualizar la variable appIsReady
   const [appIsReady, setAppIsReady] = useState(false);
+  const [logueado, setLogueado] = useState(false);
 
-  // useEffect: Hook que, de forma predeterminada, se ejecuta después del primer renderizado 
-  // y después de cada actualización
+  
+  // URL de la API para el usuario
+  const USER_API = "services/admin/usuario.php";
+
+  // Función que ayuda a verificar si existe previamente una sesión abierta
+  const verifyLogged = async () => {
+    try {
+      const data = await fetchData(USER_API, 'getUser');
+      if (data.session) {
+        console.log(data);
+        setLogueado(true);
+        //navigation.navigate("Home");
+      } else {
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    // Función asíncrona que simula la inicialización de la aplicación
     async function inicia() {
       try {
-        // Retrasar el lanzamiento de la aplicación por 4 segundos
         await new Promise((resolve) => setTimeout(resolve, 4000));
+        await verifyLogged();
       } catch (e) {
-        // Mostrar error en caso de existir
         console.warn(e);
       } finally {
-        // Cambiar valor de la variable para indicar que la aplicación está lista
-        setAppIsReady(true); 
+        setAppIsReady(true);
       }
     }
 
-    // Llamar a la función inicia
     inicia();
-  }, []); // El segundo argumento vacío [] asegura que el efecto se ejecute solo una vez después del primer renderizado
+  }, []);
 
-  
   if (!appIsReady) {
     return (
       <View style={styles.container}>
@@ -77,21 +81,43 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}}/>
-        <Stack.Screen name="Home" component={BottomTab} options={{headerShown:false}}/>
-        <Stack.Screen name="Perfil" component={BottomTab} options={{headerShown:false}}/>
-        <Stack.Screen name="Pass" component={VerifyEmailScreen} options={{headerShown:false}}/>
-        <Stack.Screen name="ChatScreen" component={ChatScreen} options={{headerShown:false}}/>
-        <Stack.Screen name="ChangeLanguage" component={ChangeLanguageScreen} options={{headerShown:false}}/>
-        <Stack.Screen name="VerifyCodeScreen" component={VerifyCodeScreen} options={{headerShown:false}}/>
-        <Stack.Screen name="NewPasswordScreen" component={NewPasswordScreen} options={{headerShown:false}}/>
-        <Stack.Screen name="POptions" component={P_OptionsScreen} options={{headerShown:false}}/>
-        <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{headerShown:false}}/>
-        <Stack.Screen name="CambioContra" component={CambioContra} />
-        <Stack.Screen name="CambioContra1" component={CambioContra1} />
-        <Stack.Screen name="CambioContra2" component={CambioContra2} />
-        <Stack.Screen name="CambioContra3" component={CambioContra3} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {!logueado ? (
+          <>
+            {/* Pantallas de autenticación */}
+            <Stack.Screen name="Login">
+              {props => (
+                <LoginScreen {...props} logueado={logueado} setLogueado={setLogueado} />
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
+            <Stack.Screen name="VerifyCode" component={VerifyCodeScreen} />
+            <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
+          </>
+        ) : (
+          <>
+            {/* Pantallas principales con BottomTab */}
+            <Stack.Screen name="BottomTabs">
+              {props => (
+                <BottomTab {...props} logueado={logueado} setLogueado={setLogueado} />
+              )}
+            </Stack.Screen>
+
+            {/* Pantallas adicionales sin BottomTab */}
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="POptions">
+              {props => (
+                <P_OptionsScreen {...props} logueado={logueado} setLogueado={setLogueado} />
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="ChangeLanguage" component={ChangeLanguageScreen} />
+            <Stack.Screen name="CambioContra" component={CambioContra} />
+            <Stack.Screen name="CambioContra1" component={CambioContra1} />
+            <Stack.Screen name="CambioContra2" component={CambioContra2} />
+            <Stack.Screen name="CambioContra3" component={CambioContra3} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

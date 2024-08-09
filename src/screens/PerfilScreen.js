@@ -12,7 +12,7 @@ import * as RNRestart from 'react-native-restart';
 import 'intl-pluralrules';
 import { useFocusEffect } from '@react-navigation/native';
 
-export default function PerfilScreen({ navigation }) {
+export default function PerfilScreen({ navigation, logueado, setLogueado }) {
   const { t } = useTranslation();
   //Arreglo para el perfil
   const [profile, setProfile] = useState({

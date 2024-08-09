@@ -7,14 +7,17 @@ import RNRestart from 'react-native-restart';
 import fetchData from "../utils/fetchData";
 
 const USER_API = "services/admin/usuario.php";
-export default function P_OptionsScreen({ navigation }) {
+export default function P_OptionsScreen({ navigation, logueado, setLogueado }) {
 
   const GoPerfil = () => {
     navigation.navigate("EditProfile");
   }
   const BackPerfil = () => {
-    navigation.navigate("Perfil");
-  }
+    // Navega a la pantalla de perfil dentro del BottomTab
+    navigation.navigate("BottomTabs", {
+      screen: "Perfil", // Nombre de la pantalla de perfil en el BottomTab
+    });
+  };
   const GoLanguage = () => {
     navigation.navigate("ChangeLanguage");
   }
@@ -24,7 +27,8 @@ export default function P_OptionsScreen({ navigation }) {
     try {
       const DATA = await fetchData(USER_API, 'logOut');
       if (DATA.status) {
-        navigation.navigate("LoginNav");
+        //navigation.navigate("LoginNav");
+        setLogueado(false);
       };
       const data = await response.json();
       if (data.status) {

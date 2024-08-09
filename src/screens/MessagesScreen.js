@@ -30,10 +30,10 @@ export default function MessagesScreen({ navigation }) {
         }));
         setContacts(registros);
       } else {
-        console.error(data.error);
+        console.log(data.error);
       }
     } catch (error) {
-      console.error('Error fetching contacts:', error);
+      console.log('Error fetching contacts:', error);
     }
   };
 
@@ -53,7 +53,8 @@ export default function MessagesScreen({ navigation }) {
 
         setMessages(registros);
       } else {
-        console.error(data.error);
+        setMessages([]);
+        console.log(data.error);
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
