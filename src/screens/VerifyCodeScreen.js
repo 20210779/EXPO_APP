@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
-  Alert, Keyboard, KeyboardAvoidingView, Platform,
-  ScrollView, StatusBar
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import fetchData from "../utils/fetchData";
@@ -136,18 +144,19 @@ const styles = StyleSheet.create({
   codeInput: {
     width: 40,
     height: 40,
-    marginLeft: 4,
-    marginStart: 10,
     backgroundColor: '#fff',
     textAlign: 'center',
     fontSize: 18,
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#0356A2',
   },
   button: {
     backgroundColor: '#007bff',
     paddingVertical: 10,
     paddingHorizontal: 100,
     borderRadius: 5,
+    marginTop: 20,
   },
   buttonText: {
     color: '#fff',
