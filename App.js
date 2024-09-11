@@ -122,7 +122,7 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
+//Estilos 
 const styles = StyleSheet.create({
   container: {
     flex: 1,

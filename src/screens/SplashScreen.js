@@ -46,7 +46,7 @@ export default function SplashScreen() {
 
 }
 
-
+//Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
