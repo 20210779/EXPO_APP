@@ -7,6 +7,7 @@ Integrantes:
   4. Francisco Eduardo Peña Márquez / 20210779
   5. Adiel Enrique Montepeque Juárez / 20220297
 .
+
 Descripcion: esta app tiene la funcion para la empresa der de uso privado ya que tiene las funciones de chat y notificaciones de las cotizaciones ralizadas al wed y por la misma razon de tener solo 2 apartados importantes-
 esta teiene un tamaño compacto y reducido a comparacion de otras app 
 .
