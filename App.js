@@ -20,6 +20,10 @@ import CambioContra1 from './src/screens/CambioContra-1';
 import CambioContra2 from './src/screens/CambioContra-2';
 import CambioContra3 from './src/screens/CambioContra-3';
 import fetchData from "./src/utils/fetchData";
+import { AlertNotificationRoot } from "react-native-alert-notification";
+import { DialogNotification, ToastNotification } from "./src/components/Alerts/AlertComponent";
+/* import { I18nextProvider } from 'react-i18next';
+import i18n from './src/screens/i18n'; */
 // Librerías
 import * as SplashScreen from 'expo-splash-screen';
 import 'intl-pluralrules';
@@ -30,7 +34,7 @@ export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
   const [logueado, setLogueado] = useState(false);
 
-  
+
   // URL de la API para el usuario
   const USER_API = "services/admin/usuario.php";
 
@@ -39,11 +43,15 @@ export default function App() {
     try {
       const data = await fetchData(USER_API, 'getUser');
       if (data.session) {
-        console.log(data);
-        setLogueado(true);
-        //navigation.navigate("Home");
+        ToastNotification(1, `Se verifico la sesión.`, true);
+        setTimeout(() => {
+          setLogueado(true);
+        }, 1000)
       } else {
-        console.log(data);
+        ToastNotification(3, `Sesión expirada`, true);
+        setTimeout(() => {
+          setLogueado(false);
+        }, 1000)
       }
     } catch (error) {
       console.log(error);
@@ -63,6 +71,17 @@ export default function App() {
     }
 
     inicia();
+    // Verificación continua de la sesión cada minuto
+    const intervalId = setInterval(() => {
+      if (logueado == false) {
+
+      } else{
+        verifyLogged();
+      }
+    }, 900000);
+
+    // Limpieza del intervalo cuando el componente se desmonte
+    return () => clearInterval(intervalId);
   }, []);
 
   if (!appIsReady) {
@@ -80,46 +99,48 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!logueado ? (
-          <>
-            {/* Pantallas de autenticación */}
-            <Stack.Screen name="Login">
-              {props => (
-                <LoginScreen {...props} logueado={logueado} setLogueado={setLogueado} />
-              )}
-            </Stack.Screen>
-            <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
-            <Stack.Screen name="VerifyCode" component={VerifyCodeScreen} />
-            <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
-          </>
-        ) : (
-          <>
-            {/* Pantallas principales con BottomTab */}
-            <Stack.Screen name="BottomTabs">
-              {props => (
-                <BottomTab {...props} logueado={logueado} setLogueado={setLogueado} />
-              )}
-            </Stack.Screen>
+    <AlertNotificationRoot>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {!logueado ? (
+            <>
+              {/* Pantallas de autenticación */}
+              <Stack.Screen name="Login">
+                {props => (
+                  <LoginScreen {...props} logueado={logueado} setLogueado={setLogueado} />
+                )}
+              </Stack.Screen>
+              <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
+              <Stack.Screen name="VerifyCode" component={VerifyCodeScreen} />
+              <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
+            </>
+          ) : (
+            <>
+              {/* Pantallas principales con BottomTab */}
+              <Stack.Screen name="BottomTabs">
+                {props => (
+                  <BottomTab {...props} logueado={logueado} setLogueado={setLogueado} />
+                )}
+              </Stack.Screen>
 
-            {/* Pantallas adicionales sin BottomTab */}
-            <Stack.Screen name="ChatScreen" component={ChatScreen} />
-            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-            <Stack.Screen name="POptions">
-              {props => (
-                <P_OptionsScreen {...props} logueado={logueado} setLogueado={setLogueado} />
-              )}
-            </Stack.Screen>
-            <Stack.Screen name="ChangeLanguage" component={ChangeLanguageScreen} />
-            <Stack.Screen name="CambioContra" component={CambioContra} />
-            <Stack.Screen name="CambioContra1" component={CambioContra1} />
-            <Stack.Screen name="CambioContra2" component={CambioContra2} />
-            <Stack.Screen name="CambioContra3" component={CambioContra3} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+              {/* Pantallas adicionales sin BottomTab */}
+              <Stack.Screen name="ChatScreen" component={ChatScreen} />
+              <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+              <Stack.Screen name="POptions">
+                {props => (
+                  <P_OptionsScreen {...props} logueado={logueado} setLogueado={setLogueado} />
+                )}
+              </Stack.Screen>
+              <Stack.Screen name="ChangeLanguage" component={ChangeLanguageScreen} />
+              <Stack.Screen name="CambioContra" component={CambioContra} />
+              <Stack.Screen name="CambioContra1" component={CambioContra1} />
+              <Stack.Screen name="CambioContra2" component={CambioContra2} />
+              <Stack.Screen name="CambioContra3" component={CambioContra3} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AlertNotificationRoot>
   );
 }
 //Estilos 

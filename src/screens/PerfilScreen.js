@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, StyleSheet, Image, Text } from "react-native";
+import {
+  View, StyleSheet, Image, Text, Dimensions,
+  TouchableOpacity,
+} from "react-native";
 
 import { Card, Button } from "react-native-paper";
 import fetchData from "../utils/fetchData";
@@ -11,7 +14,10 @@ import i18n from './i18n';
 import * as RNRestart from 'react-native-restart';
 import 'intl-pluralrules';
 import { useFocusEffect } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 
+const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
 export default function PerfilScreen({ navigation, logueado, setLogueado }) {
   const { t } = useTranslation();
   //Arreglo para el perfil
@@ -37,14 +43,14 @@ export default function PerfilScreen({ navigation, logueado, setLogueado }) {
       setProfile({
         name: profileData.nombre,
         fullname: profileData.apellido,
-        email: profileData.correo,
+        email: profileData.correo_electronico,
         phone: profileData.numero_telefono,
         image: imageUrl,
       });
 
       console.log(data.dataset);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     } finally {
       console.log("Petición hecha");
     }
@@ -82,9 +88,14 @@ export default function PerfilScreen({ navigation, logueado, setLogueado }) {
       <Card style={styles.card}>
         <Text style={styles.info}>Correo: {profile.email}</Text>
         <Text style={styles.info}>Teléfono: {profile.phone}</Text>
-        <Button mode="contained" style={styles.button} onPress={GoPerfil}>
-          Opciones
-        </Button>
+        <TouchableOpacity onPress={GoPerfil}>
+          <LinearGradient
+            colors={['#1976D2', '#42A5F5']}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Opciones</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </Card>
     </View>
   );
@@ -93,13 +104,14 @@ export default function PerfilScreen({ navigation, logueado, setLogueado }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00A2FF",
+    backgroundColor: "#003D74",
+    paddingVertical: windowHeight * 0.05,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#1976D2",
+    backgroundColor: "#0D47A1",
   },
   logo: {
     width: 40,
@@ -122,7 +134,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 90,
     alignItems: "center",
-    backgroundColor: "#1984E2",
+    backgroundColor: "#0D47A1",
   },
   profileImage: {
     width: '100%',
@@ -142,8 +154,16 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
-    marginTop: 20,
-    borderRadius: 0,
-    backgroundColor: "#67B4F9",
+    width: windowWidth * 0.5,
+    height: windowWidth * 0.1,
+    borderRadius: 5,
+    marginTop: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    maxWidth: windowWidth * 0.3
   },
 });

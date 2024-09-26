@@ -38,8 +38,8 @@ export default function Sesion({ route }) {
       // Creamos un FormData con el tokenV, nueva contraseña y confirmación de nueva contraseña.
       const form = new FormData();
       form.append("token", tokenV);
-      form.append("usuario_nueva_contraseña", npassword);
-      form.append("usuario_confirmar_nueva_contraseña", cnpassword);
+      form.append("nuevaClave", npassword);
+      form.append("confirmarClave", cnpassword);
       
       // Hacemos una solicitud usando fetchData para cambiar la contraseña y recibir una respuesta.
       const DATA = await fetchData(USER_API, "changePasswordByEmail", form);
@@ -67,7 +67,7 @@ export default function Sesion({ route }) {
       }
     } catch (error) {
       // Capturamos y manejamos errores que puedan ocurrir durante la solicitud.
-      console.error(error, "Error desde Catch");
+      console.log(error, "Error desde Catch");
       Alert.alert("Error", "Ocurrió un error al iniciar sesión");
     }
   };

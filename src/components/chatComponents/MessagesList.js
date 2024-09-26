@@ -32,11 +32,13 @@ export default function MessagesList({ data, navigation, refreshControl }) {
 const styles = StyleSheet.create({
   messageCard: {
     flexDirection: 'row',
-    padding: 10,
-    backgroundColor: '#ffffff',
-    borderRadius: 5,
+    padding: 12,
+    margin: 2,
+    borderRadius: 10,
+    backgroundColor: "white",
     marginBottom: 10,
     alignItems: 'center',
+    elevation: 2,
   },
   profileImage: {
     width: 50,

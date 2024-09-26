@@ -1,6 +1,8 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 
+const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
 export default function Chip({ label, selected, onPress }) {
   return (
     <TouchableOpacity
@@ -19,6 +21,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#42a5f5',
     marginHorizontal: 5,
+    maxWidth: windowWidth * 0.4,
+    elevation: 2,
   },
   selectedChip: {
     backgroundColor: '#1e88e5',

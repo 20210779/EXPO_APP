@@ -1,69 +1,110 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import fetchData from "../utils/fetchData";
+import { AlertNotificationRoot } from "react-native-alert-notification";
+import { DialogNotification, ToastNotification } from "../components/Alerts/AlertComponent";
+import { LinearGradient } from 'expo-linear-gradient';
 
-export default function NewPasswordScreen() {
+const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
+export default function NewPasswordScreen({ route }) {
+  const { tokenV } = route.params; // Obtener el token de la ruta
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigation = useNavigation();
+  const USER_API = "services/admin/usuario.php";
 
   const validatePassword = (password) => {
     return /^(?=.*[a-zA-Z]).{8,}$/.test(password);
   };
 
-  const handleSavePassword = () => {
+  const handleSavePassword = async () => {
     if (newPassword !== confirmPassword) {
-      Alert.alert("Error", "Las contraseñas no coinciden.");
+      ToastNotification(2, `Las contraseñas no coinciden.`, true);
     } else if (!validatePassword(newPassword)) {
-      Alert.alert("Error", "La contraseña debe tener al menos 8 caracteres y contener mayúsculas o minúsculas.");
+      ToastNotification(2, `La contraseña debe tener al menos 8 caracteres y contener letras.`, true);
     } else {
-      // Aquí puedes agregar la lógica para guardar la nueva contraseña
-      Alert.alert("Éxito", "La contraseña ha sido actualizada.");
-      // Navegar a la siguiente pantalla
-      navigation.navigate('Login'); // Reemplaza 'NextScreen' con el nombre de tu siguiente pantalla
+      try {
+        const form = new FormData();
+        form.append("token", tokenV);
+        form.append("nuevaClave", newPassword);
+        form.append("confirmarClave", confirmPassword);
+
+        const DATA = await fetchData(USER_API, "changePasswordByEmail", form);
+
+        if (DATA.status) {
+          setNewPassword('');
+          setConfirmPassword('');
+          ToastNotification(1, `${DATA.message}.`, true);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          });
+        } else {
+          ToastNotification(2, `${DATA.error} ${DATA.exception}.`, true);
+
+          if (DATA.error === "El tiempo para cambiar su contraseña ha expirado") {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          }
+        }
+      } catch (error) {
+        ToastNotification(2, error.message, true);
+      }
     }
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Image
-          source={require('../../assets/back_arrow.png')} // Reemplaza con la ruta de tu icono de flecha
-          style={styles.backIcon}
-        />
-      </TouchableOpacity>
-      <View style={styles.content}>
-        <Image
-          source={require('../../assets/password_icon.png')} // Reemplaza con la ruta de tu icono de contraseña
-          style={styles.passwordIcon}
-        />
-        <Text style={styles.title}>Ingrese su nueva contraseña</Text>
-        <Text style={styles.inputLabel}>Contraseña nueva:</Text>
-        <TextInput
-          style={styles.input}
-          secureTextEntry
-          onChangeText={setNewPassword}
-          value={newPassword}
-        />
-        <Text style={styles.inputLabel}>Confirmar contraseña:</Text>
-        <TextInput
-          style={styles.input}
-          secureTextEntry
-          onChangeText={setConfirmPassword}
-          value={confirmPassword}
-        />
-        <TouchableOpacity style={styles.button} onPress={handleSavePassword}>
-          <Text style={styles.buttonText}>Enviar</Text>
+    <AlertNotificationRoot>
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Image
+            source={require('../../assets/back_arrow.png')}
+            style={styles.backIcon}
+          />
         </TouchableOpacity>
+        <View style={styles.content}>
+          <Image
+            source={require('../../assets/password_icon.png')}
+            style={styles.passwordIcon}
+          />
+          <Text style={styles.title}>Ingrese su nueva contraseña</Text>
+          <Text style={styles.inputLabel}>Contraseña nueva:</Text>
+          <TextInput
+            style={styles.input}
+            secureTextEntry
+            onChangeText={setNewPassword}
+            value={newPassword}
+          />
+          <Text style={styles.inputLabel}>Confirmar contraseña:</Text>
+          <TextInput
+            style={styles.input}
+            secureTextEntry
+            onChangeText={setConfirmPassword}
+            value={confirmPassword}
+          />
+          
+          <TouchableOpacity onPress={handleSavePassword}>
+            <LinearGradient
+              colors={['#1976D2', '#42A5F5']}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>Guardar</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </AlertNotificationRoot>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#42a5f5',
+    backgroundColor: '#0356A2',
     padding: 20,
   },
   backButton: {
@@ -104,14 +145,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#1e88e5',
-    paddingVertical: 10,
-    paddingHorizontal: 90,
+    width: windowWidth * 0.5,
+    height: windowWidth * 0.15,
     borderRadius: 5,
+    marginTop: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#ffffff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

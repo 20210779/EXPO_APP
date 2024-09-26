@@ -29,7 +29,7 @@ app.post('/message', async (req, res) => {
     // Envía la respuesta generada por OpenAI al cliente
     res.json({ message: response.data.choices[0].text.trim() });
   } catch (error) {
-    console.error('Error:', error);
+    console.log('Error:', error);
     res.status(500).json({ error: 'Error al procesar la solicitud' });
   }
 });

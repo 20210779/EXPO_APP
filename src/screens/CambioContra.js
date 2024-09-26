@@ -36,7 +36,7 @@ export default function Home({ navigation }) {
       }
     } catch (error) {
       // Capturamos y manejamos errores que puedan ocurrir durante la solicitud.
-      console.error(error);
+      console.log(error);
       Alert.alert("Error", "Ocurrió un error al registrar la cuenta");
     }
   };

@@ -54,7 +54,7 @@ export default function Sesion({ route }) {
       }
     } catch (error) {
       // Capturamos y manejamos errores que puedan ocurrir durante la solicitud.
-      console.error(error, "Error desde Catch");
+      console.log(error, "Error desde Catch");
       Alert.alert("Error", "Ocurrió un error al iniciar sesión");
     }
   };

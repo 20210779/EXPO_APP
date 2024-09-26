@@ -1,13 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, Image, Alert, Text } from 'react-native';
+import { View, StyleSheet, Image, Alert, Text, Dimensions } from 'react-native';
 import { Card, Button } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import RNRestart from 'react-native-restart';
+import { useTranslation } from 'react-i18next';
 
 import fetchData from "../utils/fetchData";
 
+const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
+
 const USER_API = "services/admin/usuario.php";
 export default function P_OptionsScreen({ navigation, logueado, setLogueado }) {
+  const { t } = useTranslation(); // Accede a las traducciones
 
   const GoPerfil = () => {
     navigation.navigate("EditProfile");
@@ -67,12 +72,12 @@ export default function P_OptionsScreen({ navigation, logueado, setLogueado }) {
               Editar
             </Button>
           </View>
-          <View style={styles.option}>
+         {/*  <View style={styles.option}>
             <MaterialIcons name="language" size={24} color="white" />
             <Button mode="contained" style={styles.button} onPress={GoLanguage}>
               Idioma
             </Button>
-          </View>
+          </View> */}
           <View style={styles.option}>
             <Button mode="contained" style={styles.button} onPress={handleLogout}>
               cerrar sesion
@@ -90,7 +95,8 @@ export default function P_OptionsScreen({ navigation, logueado, setLogueado }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#00A2FF',
+    backgroundColor: '#003D74',
+    paddingVertical: windowHeight * 0.05,
   },
   logo: {
     width: 40,
@@ -121,7 +127,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#1976D2',
+    backgroundColor: '#0D47A1',
   },
   headerText: {
     color: 'white',
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
     padding: 90,
     borderRadius: 10,
     alignItems: 'center',
-    backgroundColor: '#1984E2',
+    backgroundColor: '#0D47A1',
   },
   profileImage: {
     width: '100%',
@@ -157,12 +163,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   button: {
-    backgroundColor: '#67B4F9',
+    backgroundColor: '#1976D2',
     flex: 1,
     marginLeft: 10,
   },
   backButton: {
-    backgroundColor: '#00A2FF',
+    backgroundColor: '#42A5F5',
     marginTop: 20,
     width: '80%',
   },

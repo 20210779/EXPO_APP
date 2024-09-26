@@ -30,11 +30,13 @@ export default function ContactsList({ contacts, navigation, refreshControl }) {
 const styles = StyleSheet.create({
   contactCard: {
     flexDirection: 'row',
-    padding: 10,
-    backgroundColor: '#ffffff',
-    borderRadius: 5,
+    padding: 12,
+    margin: 2,
+    borderRadius: 10,
+    backgroundColor: "white",
     marginBottom: 10,
     alignItems: 'center',
+    elevation: 2,
   },
   profileImage: {
     width: 50,

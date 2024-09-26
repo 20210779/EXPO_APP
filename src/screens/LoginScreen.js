@@ -7,18 +7,20 @@ import {
   StyleSheet,
   Image,
   Alert,
+  Dimensions
 } from "react-native";
-import BottomTab from "../navegation/BottonTab";
 import fetchData from "../utils/fetchData";
-import { useTranslation } from 'react-i18next';
-import i18n from './i18n';
 import * as RNRestart from 'react-native-restart';
 import 'intl-pluralrules';
 import { useFocusEffect } from '@react-navigation/native';
+import { AlertNotificationRoot } from "react-native-alert-notification";
+import { DialogNotification, ToastNotification } from "../components/Alerts/AlertComponent";
+import { LinearGradient } from 'expo-linear-gradient';
 
 
+const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
 export default function LoginScreen({ navigation, logueado, setLogueado }) {
-  const { t } = useTranslation();
   //Constantes para el formulario
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -74,7 +76,7 @@ export default function LoginScreen({ navigation, logueado, setLogueado }) {
   //Función para el manejo del inicio de sesión
   const handleLogin = async () => {
     if (username === "" || password === "") {
-      Alert.alert("Error", "Por favor, complete todos los campos");
+      ToastNotification(2, `Campos requeridos, Por favor, complete todos los campos.`, true);
     } else {
       try {
         // Creación del formulario para la petición
@@ -82,19 +84,20 @@ export default function LoginScreen({ navigation, logueado, setLogueado }) {
         formData.append("correo", username);
         formData.append("clave", password);
         // Petición para iniciar sesión.
-        const responseData = await fetchData(USER_API, 'logIn', formData);
+        const responseData = await fetchData(USER_API, 'logInMobile', formData);
 
         if (responseData.status) {
-          Alert.alert(responseData.message);
+          ToastNotification(1, `${responseData.message}.`, true);
           setTimeout(() => {
             verifyLogged();
           }, 1500)
         }
         else {
-          Alert.alert("Error", responseData.error);
+          ToastNotification(2, `${responseData.error} ${responseData.exception}.`, true);
           console.log(responseData.error);
         }
       } catch (error) {
+        ToastNotification(2, error.message, true);
         console.log(error);
       }
     }
@@ -120,51 +123,71 @@ export default function LoginScreen({ navigation, logueado, setLogueado }) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoContainer}>
+    <AlertNotificationRoot>
+      <View style={styles.container}>
         <Image
-          source={require("../../assets/logo_carga.png")} // Reemplaza con la ruta de tu logo
-          style={styles.logo}
+          source={require("../../assets/decoracion-arriba.png")} // Reemplaza con la ruta de tu logo
+          style={styles.decoro}
         />
+        <View style={styles.container2}>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require("../../assets/logo_carga.png")} // Reemplaza con la ruta de tu logo
+              style={styles.logo}
+            />
+          </View>
+          <Text style={styles.title}>
+            Ingrese sus credenciales para acceder al programa
+          </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Usuario"
+            placeholderTextColor="#000"
+            value={username}
+            onChangeText={setUsername}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña"
+            placeholderTextColor="#000"
+            secureTextEntry={true}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity onPress={GoPassword}>
+              <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogin}>
+            <LinearGradient
+              colors={['#1976D2', '#42A5F5']}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>Iniciar sesión</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </View>
-      <Text style={styles.title}>
-        Ingrese sus credenciales para acceder al programa
-      </Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Usuario"
-        placeholderTextColor="#ffffff"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        placeholderTextColor="#ffffff"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
-      />
-      <TouchableOpacity style={styles.button} onPress={GoPassword}>
-        <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Iniciar</Text>
-      </TouchableOpacity>
-    </View>
+    </AlertNotificationRoot>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#003D74", // Color de fondo
+  },
+  container2: {
+    marginTop: windowHeight * 0.15,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#004A8D", // Color de fondo
+    backgroundColor: "#003D74", // Color de fondo
     padding: 16,
   },
   logoContainer: {
     marginBottom: 20,
+  },
+  decoro: {
+    marginTop: 25,
   },
   logo: {
     width: 100,
@@ -177,25 +200,24 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input: {
-    width: "80%",
+    width: windowWidth * 0.75,
     height: 40,
-    backgroundColor: "#3388ff",
+    backgroundColor: "#1BC8FF",
     borderRadius: 5,
     marginBottom: 10,
     paddingHorizontal: 10,
-    color: "#ffffff",
+    color: "#000",
   },
   forgotPassword: {
     color: "#ffffff",
     fontSize: 14,
-    marginBottom: 20,
     justifyContent: "center",
     alignItems: "center",
+    maxWidth: windowWidth * 0.8
   },
   button: {
-    width: "80%",
-    height: 40,
-    backgroundColor: "#00ccff",
+    width: windowWidth * 0.5,
+    height: windowHeight * 0.15,
     borderRadius: 5,
     marginTop: 10,
     justifyContent: "center",
@@ -204,5 +226,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#ffffff",
     fontSize: 16,
+    maxWidth: windowWidth * 0.3
   },
 });

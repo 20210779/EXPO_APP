@@ -1,30 +1,37 @@
-import React, { useState, useEffect, useCallback } from "react"; 
-import fetchData from "../utils/fetchData"; 
-import { View, Text, Image, TextInput, StyleSheet, RefreshControl } from 'react-native'; 
-import * as Constantes from '../utils/constantes'; 
-import { useFocusEffect } from '@react-navigation/native'; 
-import Chip from '../components/chip/Chip'; 
-import MessagesList from '../components/chatComponents/MessagesList'; 
+import React, { useState, useEffect, useCallback } from "react";
+import fetchData from "../utils/fetchData";
+import { View, Text, Image, TextInput, StyleSheet, RefreshControl, Dimensions, ScrollView } from 'react-native';
+import * as Constantes from '../utils/constantes';
+import { useFocusEffect } from '@react-navigation/native';
+import Chip from '../components/chip/Chip';
+import MessagesList from '../components/chatComponents/MessagesList';
 import ContactsList from '../components/chatComponents/ContactsList';
+import { Searchbar } from 'react-native-paper';
 
+const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
 // Componente principal de la pantalla de mensajes
 export default function MessagesScreen({ navigation }) {
   // Estado para manejar la búsqueda, contactos, mensajes, pestaña seleccionada y refresco
-  const [search, setSearch] = useState(''); 
-  const [contacts, setContacts] = useState([]); 
-  const [messages, setMessages] = useState([]); 
-  const [selectedTab, setSelectedTab] = useState('messages'); 
+  const [contacts, setContacts] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [selectedTab, setSelectedTab] = useState('messages');
   const [refreshing, setRefreshing] = useState(false); // Estado para manejar el refresco
+  const [searchQuery, setSearchQuery] = useState("");
+  const [data, setData] = useState(false);
+  //Constantes para la busqueda con el elemento de la libreria searchBar
+  const onChangeSearch = (query) => setSearchQuery(query);
 
   // Rutas a las APIs para usuarios y mensajes
-  const USER_API = "services/admin/usuario.php"; 
-  const CHAT_API = "services/admin/chat.php"; 
-  const SERVER_URL = Constantes.IMAGES_URL; 
+  const USER_API = "services/admin/usuario.php";
+  const CHAT_API = "services/admin/chat.php";
+  const SERVER_URL = Constantes.IMAGES_URL;
 
   // Función para obtener la lista de contactos
-  const fetchContacts = async () => {
+  const fetchContacts = async (searchForm = null) => {
     try {
-      const data = await fetchData(USER_API, 'readAll');
+      const action = searchForm ? "searchRows" : "readAll";
+      const data = await fetchData(USER_API, action, searchForm);
       if (data.status === 1) {
         // Mapea los datos de los contactos a un formato específico
         const registros = data.dataset.map((item) => ({
@@ -35,6 +42,7 @@ export default function MessagesScreen({ navigation }) {
         }));
         setContacts(registros);
       } else {
+        setContacts([]);
         console.log(data.error);
       }
     } catch (error) {
@@ -43,9 +51,10 @@ export default function MessagesScreen({ navigation }) {
   };
 
   // Función para obtener la lista de mensajes recibidos
-  const fetchFillMessages = async () => {
+  const fetchFillMessages = async (searchForm = null) => {
     try {
-      const data = await fetchData(CHAT_API, 'readAllMessagesRecived');
+      const action = searchForm ? "searchRows" : "readAllMessagesRecived";
+      const data = await fetchData(CHAT_API, action, searchForm);
       if (data.status === 1) {
         // Mapea los datos de los mensajes a un formato específico
         const registros = data.dataset.map((item) => ({
@@ -63,21 +72,21 @@ export default function MessagesScreen({ navigation }) {
         console.log(data.error);
       }
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.log('Error fetching messages:', error);
     }
   };
 
   // UseEffect para cargar los contactos y mensajes al montar el componente
   useEffect(() => {
-    fetchContacts(); 
-    fetchFillMessages(); 
+    fetchContacts();
+    fetchFillMessages();
   }, []);
 
   // useFocusEffect para recargar contactos y mensajes al reenfocar la pantalla
   useFocusEffect(
     useCallback(() => {
-      fetchContacts(); 
-      fetchFillMessages(); 
+      fetchContacts();
+      fetchFillMessages();
     }, [])
   );
 
@@ -90,6 +99,19 @@ export default function MessagesScreen({ navigation }) {
       .catch(() => setRefreshing(false));
   }, []);
 
+
+  useEffect(() => {
+    if (searchQuery != "") {
+      const formData = new FormData();
+      formData.append("search", searchQuery);
+      fetchContacts(formData);
+      fetchFillMessages(formData);
+    } else {
+      fetchContacts();
+      fetchFillMessages();
+    }
+  }, [searchQuery]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -98,15 +120,16 @@ export default function MessagesScreen({ navigation }) {
           style={styles.logo}
         />
         <Text style={styles.title}>Pemi-parts</Text>
-        <Text style={styles.messagesTitle}>Mensajes</Text>
       </View>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Buscar..."
-        placeholderTextColor="#999"
-        value={search}
-        onChangeText={setSearch}
-      />
+      <View style={styles.searchContainer}>
+        <Searchbar
+          placeholder="Busca aquí..."
+          onChangeText={onChangeSearch}
+          value={searchQuery}
+          placeholderTextColor='gray'
+          style={styles.searchbar}
+        />
+      </View>
       <View style={styles.chipContainer}>
         <Chip
           label="Mensajes"
@@ -121,21 +144,36 @@ export default function MessagesScreen({ navigation }) {
       </View>
 
       {selectedTab === 'messages' ? (
-        <MessagesList 
-          data={messages} 
-          navigation={navigation} 
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
+
+        messages.length > 0 && messages ? (
+          <MessagesList
+            data={messages}
+            navigation={navigation}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          />
+        ) : (
+          <View style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Image style={{ height: 80, width: 80, marginBottom: 10 }} source={require('../../assets/find.png')} />
+            <Text style={{ backgroundColor: '#e6ecf1', color: '#043998', padding: 20, borderRadius: 15, maxWidth: 300 }}>No se encontraron resultados</Text>
+          </View>
+        )
       ) : (
-        <ContactsList 
-          contacts={contacts} 
-          navigation={navigation}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
+        contacts.length > 0 && contacts ? (
+          <ContactsList
+            contacts={contacts}
+            navigation={navigation}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          />
+        ) : (
+          <View style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Image style={{ height: 80, width: 80, marginBottom: 10 }} source={require('../../assets/find.png')} />
+            <Text style={{ backgroundColor: '#e6ecf1', color: '#043998', padding: 20, borderRadius: 15, maxWidth: 300 }}>No se encontraron resultados</Text>
+          </View>
+        )
       )}
     </View>
   );
@@ -144,38 +182,45 @@ export default function MessagesScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#42a5f5',
-    padding: 10,
+    backgroundColor: '#003D74',
+    paddingVertical: windowHeight * 0.05,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 10,
-    backgroundColor: '#1e88e5',
+    padding: 16,
+    backgroundColor: '#0D47A1',
   },
   logo: {
     width: 40,
     height: 40,
+    marginRight: 10,
   },
   title: {
-    marginLeft: 10,
     fontSize: 20,
     color: '#fff',
-    fontWeight: 'bold',
   },
   messagesTitle: {
     fontSize: 16,
     color: '#fff',
     fontWeight: 'bold',
   },
-  searchInput: {
+  searchbar: {
+    flex: 1,
     marginVertical: 10,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 5,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'gray',
+    color: 'gray',
+    maxHeight: windowHeight * 0.07,
+    maxWidth: windowWidth * 1,
   },
   chipContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  searchContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginVertical: 10,
